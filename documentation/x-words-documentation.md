@@ -79,32 +79,61 @@ All word-limit snippets follow the same pattern with different maximum word coun
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function () {
-  validador.DiezPalabras = true; // Default: not required (hidden)
+  validador.DiezPalabras = false; // Default: requires validation
 });
 ```
 
 **Default state:**
-- Validation set to `true` (auto-pass)
+- Validation set to `false` (requires validation)
 - Field hidden until variant requires it
 
-### 2. Variant Selection Logic
+### 2. Variant Selection Logic (Smart Detection - v1.1.0+)
+
+The `-grabado.liquid` snippets use smart option detection that first searches by label text, then falls back to hardcoded IDs:
 
 ```javascript
-const conMarcacionOption = document.getElementById("template--16560389324869__main-2-1");
-const sinMarcacionOption = document.getElementById("template--16560389324869__main-2-0");
+// Smart option detection - searches by label text first
+let conFraseOption = null;
+let sinFraseOption = null;
+
+const allRadios = document.querySelectorAll('input[type="radio"]');
+
+allRadios.forEach(radio => {
+  const label = document.querySelector(`label[for="${radio.id}"]`);
+  if (label) {
+    const labelText = label.textContent.trim().toLowerCase();
+    if (labelText.includes('con frase')) {
+      conFraseOption = radio;
+    } else if (labelText.includes('sin frase')) {
+      sinFraseOption = radio;
+    }
+  }
+});
+
+// Fallback to hardcoded IDs if label search fails
+if (!conFraseOption || !sinFraseOption) {
+  conFraseOption = conFraseOption || document.getElementById("template--XXXXX__main-X-1");
+  sinFraseOption = sinFraseOption || document.getElementById("template--XXXXX__main-X-0");
+}
+
+// Graceful degradation - if options not found, auto-pass validation
+if (!conFraseOption || !sinFraseOption) {
+  console.error("Options not found");
+  validador.DiezPalabras = true; // Don't block cart
+  return;
+}
 
 function toggleCustomTextField() {
-  const fieldContainer = document.querySelector(".field-container");
-
-  if (conMarcacionOption.checked) {
-    fieldContainer.style.display = "block";
+  if (conFraseOption.checked) {
+    fieldContainer.style.display = 'flex';
     validador.DiezPalabras = false; // Now required
     validarTexto(); // Validate immediately
-  } else if (sinMarcacionOption.checked) {
-    fieldContainer.style.display = "none";
+  } else if (sinFraseOption.checked) {
+    fieldContainer.style.display = 'none';
     validador.DiezPalabras = true; // Not required
-    errorMessage.style.display = "none";
-    emptyMessage.style.display = "none";
+    inputField.value = ''; // Clear the field
+    errorMessage.style.display = 'none';
+    emptyMessage.style.display = 'none';
   }
 }
 
@@ -112,13 +141,15 @@ function toggleCustomTextField() {
 toggleCustomTextField();
 
 // Listen for changes
-conMarcacionOption.addEventListener("change", toggleCustomTextField);
-sinMarcacionOption.addEventListener("change", toggleCustomTextField);
+conFraseOption.addEventListener("change", toggleCustomTextField);
+sinFraseOption.addEventListener("change", toggleCustomTextField);
 ```
 
-**Variant options:**
-- **Sin Marcación** (No engraving): Field hidden, validation auto-passes (`true`)
-- **Con Marcación** (With engraving): Field shown, validation required (`false` until valid)
+**Variant options (v1.1.0+):**
+- **Sin frase** (No phrase): Field hidden, validation auto-passes (`true`)
+- **Con frase** (With phrase): Field shown, validation required (`false` until valid)
+
+**Note:** The old 3-option system with "dobleMarcado" / "Foto grabado adicional" was removed in v1.1.0.
 
 ### 3. Word Count Validation
 
@@ -380,15 +411,15 @@ Links input to product form even if rendered separately.
 
 ## Common Use Cases
 
-### Scenario 1: Simple Toggle
+### Scenario 1: Simple Toggle (v1.1.0+)
 ```javascript
-// "Sin Marcación" selected
+// "Sin frase" selected
 validador.DiezPalabras = true;  // Auto-pass
 fieldContainer.style.display = "none";  // Hidden
 
-// "Con Marcación" selected
+// "Con frase" selected
 validador.DiezPalabras = false;  // Requires validation
-fieldContainer.style.display = "block";  // Visible
+fieldContainer.style.display = "flex";  // Visible
 ```
 
 ### Scenario 2: Multiple Text Fields
@@ -450,10 +481,12 @@ All features supported in modern browsers.
 ### Field Doesn't Show When Variant Selected
 
 **Check:**
-1. Variant option IDs correct?
-2. `toggleCustomTextField()` being called?
-3. CSS `display: block` being set?
-4. JavaScript errors in console?
+1. Option labels contain "con frase" or "sin frase" text?
+2. If using hardcoded IDs, are they correct for your theme?
+3. `toggleCustomTextField()` being called?
+4. CSS `display: flex` being set?
+5. JavaScript errors in console?
+6. Check browser console for "Options not found" error message
 
 ### Validation Not Working
 
@@ -540,6 +573,32 @@ if (charCount > 50) {
 - Product form with matching ID
 
 **Used in:** Product pages with text customization options
+
+---
+
+## Version History
+
+### v1.1.0 Changes (2024-12-06)
+
+**Breaking Changes:**
+- Removed 3-option "dobleMarcado" / "Foto grabado adicional" support
+- All `-grabado.liquid` snippets now use 2-option logic only
+
+**Updated Snippets:**
+- `10-words-grabado.liquid`
+- `12-words-grabado.liquid` (also removed secondary image uploader)
+- `20-words-grabado.liquid`
+
+**New Features:**
+- Smart option detection (searches by label text before using hardcoded IDs)
+- Graceful degradation (auto-passes validation if options not found)
+- Unique element IDs to prevent conflicts (`error-message-10`, `error-message-12`, etc.)
+
+**Migration:**
+1. Remove "Foto grabado adicional" option from Shopify products
+2. Ensure products have only "Sin frase" and "Con frase" options
+3. Upload updated snippet files
+4. Test all affected product pages
 
 ---
 

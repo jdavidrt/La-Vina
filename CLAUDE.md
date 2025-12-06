@@ -27,7 +27,8 @@ The repository contains modular Liquid snippets for different product customizat
    - Pattern: `5-words.liquid`, `7-words.liquid`, `10-words.liquid`, `12-words.liquid`, `20-words-grabado.liquid`
    - Each validates character/word count limits
    - Adds validation keys like `validador.DiezPalabras = true/false`
-   - Shows/hides based on variant selection (e.g., "Con Marcación" vs "Sin Marcación")
+   - Shows/hides based on variant selection (e.g., "Sin frase" vs "Con frase")
+   - **Note:** `-grabado.liquid` variants use smart option detection (searches by label text first, then falls back to hardcoded IDs)
 
 2. **Image Upload Snippets**
    - `upload-images-custom.liquid`: Main image uploader with modal
@@ -138,3 +139,4 @@ La Vina/
 - **Shopify compatibility**: Never modify Shopify's form structure or intercept native events
 - **MutationObserver**: Used extensively - be aware of performance when adding new observers
 - **Spanish language**: All user-facing text is in Spanish
+- **Two-option system**: All `-grabado.liquid` snippets use "Sin frase" / "Con frase" options (the old 3-option "dobleMarcado" system was removed in v1.1.0)

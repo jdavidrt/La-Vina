@@ -7,7 +7,7 @@
     return Object.values(objeto).every(valor => valor === true);
   }
 </script>
-<div class="field-container" style="display: block;">
+<div class="field-container" style="display: none;">
   <div class="field">
     <input
       form="{{ product_form_id }}"
@@ -18,46 +18,94 @@
     >
     <label class="field__label" for="input-12palabras">Escribe tu frase personalizada: (máximo 11 palabras)</label>
   </div>
-  <p id="error-message" class="error-message">Solo se permiten hasta 11 palabras</p>
-  <p id="empty-message" class="empty-message">
+  <p id="error-message-12" class="error-message">Solo se permiten hasta 11 palabras</p>
+  <p id="empty-message-12" class="empty-message">
     Por favor ingresa la frase personalizada <span class="question-mark">!</span>
   </p>
 </div>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    validador.Img2 = false;
-    
-    // Initialize direct uploader - one clean line
-    initDirectImageUploader({
-      buttonId: 'openmodal2Button2',
-      inputId: 'img2',
-      validator: validador,
-      validatorKey: 'Img2'
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputField = document.querySelector("#input-12palabras");
+    const errorMessage = document.getElementById("error-message-12");
+    const emptyMessage = document.getElementById("empty-message-12");
+    const fieldContainer = document.querySelector('.field-container');
+
+    // Buscar opciones de "Grabado de frase" por el texto del label
+    let conFraseOption = null;
+    let sinFraseOption = null;
+
+    const allRadios = document.querySelectorAll('input[type="radio"]');
+
+    allRadios.forEach(radio => {
+      const label = document.querySelector(`label[for="${radio.id}"]`);
+      if (label) {
+        const labelText = label.textContent.trim().toLowerCase();
+        if (labelText.includes('con frase')) {
+          conFraseOption = radio;
+        } else if (labelText.includes('sin frase')) {
+          sinFraseOption = radio;
+        }
+      }
     });
-    
-    const fileContainer2 = document.querySelector('.file_container2');
-    const conMarcacionOption = document.getElementById("template--16579220963397__main-1-1");
-    const sinMarcacionOption = document.getElementById("template--16579220963397__main-1-0");
-    const dobleMarcadoOption = document.getElementById("template--16579220963397__main-1-2");
-    
-    function toggleFileContainer() {
-      const isDobleGrabadoSelected = dobleMarcadoOption.checked;      
-      fileContainer2.style.display = (isDobleGrabadoSelected)? "block" : "none";
-      
-      if (dobleMarcadoOption.checked) {
-        validador.Img2 = false;
-      } else if (sinMarcacionOption.checked || conMarcacionOption.checked) {
-        validador.Img2 = true;
-        if (Object.values(validador).every(v => v === true)) {
+
+    // Si no encontró por label, intentar con los IDs conocidos
+    if (!conFraseOption || !sinFraseOption) {
+      conFraseOption = conFraseOption || document.getElementById("template--16579220963397__main-1-1");
+      sinFraseOption = sinFraseOption || document.getElementById("template--16579220963397__main-1-0");
+    }
+
+    // Verificar que se encontraron las opciones
+    if (!conFraseOption || !sinFraseOption) {
+      console.error("No se pudieron encontrar las opciones de 'Grabado de frase'. Verificar IDs o nombres de opciones.");
+      validador.DocePalabras = true;
+      return;
+    }
+
+    // Función para validar el campo de texto
+    function validarTexto() {
+      const words = inputField.value.split(/\s+/).filter(word => word.length > 0);
+      const wordCount = words.length;
+
+      if (wordCount === 0 || wordCount > 11) {
+        validador.DocePalabras = false;
+        errorMessage.style.display = wordCount > 11 ? "block" : "none";
+      } else {
+        validador.DocePalabras = true;
+        errorMessage.style.display = "none";
+        if (sonTodosVerdaderos(validador)) {
+          addToCartButton.disabled = false;
+        }
+      }
+      emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+    }
+
+    // Función para mostrar/ocultar el campo de texto según la opción seleccionada
+    function toggleCustomTextField() {
+      if (conFraseOption.checked) {
+        fieldContainer.style.display = 'flex';
+        validador.DocePalabras = false;
+        validarTexto();
+      } else if (sinFraseOption.checked) {
+        fieldContainer.style.display = 'none';
+        validador.DocePalabras = true;
+        inputField.value = '';
+        errorMessage.style.display = 'none';
+        emptyMessage.style.display = 'none';
+        if (sonTodosVerdaderos(validador)) {
           addToCartButton.disabled = false;
         }
       }
     }
 
-    toggleFileContainer();
-    conMarcacionOption.addEventListener("change", toggleFileContainer);
-    sinMarcacionOption.addEventListener("change", toggleFileContainer);
-    dobleMarcadoOption.addEventListener("change", toggleFileContainer);
+    // Inicializar según la opción seleccionada por defecto
+    toggleCustomTextField();
+
+    // Escuchar cambios en las opciones
+    conFraseOption.addEventListener("change", toggleCustomTextField);
+    sinFraseOption.addEventListener("change", toggleCustomTextField);
+
+    // Validar texto cada vez que el usuario escribe
+    inputField.addEventListener("input", validarTexto);
   });
 </script>
 <style>

@@ -7,7 +7,7 @@
     return Object.values(objeto).every(valor => valor === true);
   }
 </script>
-<div class="field-container" style="display: block;">
+<div class="field-container" style="display: none;">
   <div class="field">
     <input
       form="{{ product_form_id }}"
@@ -18,76 +18,94 @@
     >
     <label class="field__label" for="input-20palabras">Escribe tu frase personalizada: (máximo 20 palabras)</label>
   </div>
-  <p id="error-message" class="error-message">Solo se permiten hasta 20 palabras</p>
-  <p id="empty-message" class="empty-message">
+  <p id="error-message-20" class="error-message">Solo se permiten hasta 20 palabras</p>
+  <p id="empty-message-20" class="empty-message">
     Por favor ingresa la frase personalizada <span class="question-mark">!</span>
   </p>
 </div>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const inputField = document.querySelector("#input-20palabras")
-    const errorMessage = document.getElementById("error-message");
-    const emptyMessage = document.getElementById("empty-message");
-    const conMarcacionOption = document.getElementById("template--17075361873989__main-1-2"); // ID de "Con marcación"
-    const sinMarcacionOption = document.getElementById("template--17075361873989__main-1-0"); // ID de "Sin marcación"
-    const dobleMarcadoOption = document.getElementById("template--17075361873989__main-1-1"); // ID de "Sin marcación"
+    const inputField = document.querySelector("#input-20palabras");
+    const errorMessage = document.getElementById("error-message-20");
+    const emptyMessage = document.getElementById("empty-message-20");
+    const fieldContainer = document.querySelector('.field-container');
 
-        // Función para validar el campo de texto
+    // Buscar opciones de "Grabado de frase" por el texto del label
+    let conFraseOption = null;
+    let sinFraseOption = null;
+
+    const allRadios = document.querySelectorAll('input[type="radio"]');
+
+    allRadios.forEach(radio => {
+      const label = document.querySelector(`label[for="${radio.id}"]`);
+      if (label) {
+        const labelText = label.textContent.trim().toLowerCase();
+        if (labelText.includes('con frase')) {
+          conFraseOption = radio;
+        } else if (labelText.includes('sin frase')) {
+          sinFraseOption = radio;
+        }
+      }
+    });
+
+    // Si no encontró por label, intentar con los IDs conocidos
+    if (!conFraseOption || !sinFraseOption) {
+      conFraseOption = conFraseOption || document.getElementById("template--17075361873989__main-1-1");
+      sinFraseOption = sinFraseOption || document.getElementById("template--17075361873989__main-1-0");
+    }
+
+    // Verificar que se encontraron las opciones
+    if (!conFraseOption || !sinFraseOption) {
+      console.error("No se pudieron encontrar las opciones de 'Grabado de frase'. Verificar IDs o nombres de opciones.");
+      validador.VeintePalabras = true;
+      return;
+    }
+
+    // Función para validar el campo de texto
     function validarTexto() {
       const words = inputField.value.split(/\s+/).filter(word => word.length > 0);
       const wordCount = words.length;
 
-      // Verifica si el campo está vacío o no cumple las condiciones
       if (wordCount === 0 || wordCount > 20) {
-         validador.VeintePalabras = false;
-        errorMessage.style.display = wordCount > 0 ? "block" : "none"; // Muestra u oculta error
+        validador.VeintePalabras = false;
+        errorMessage.style.display = wordCount > 20 ? "block" : "none";
       } else {
         validador.VeintePalabras = true;
-        errorMessage.style.display = "none"; // Oculta mensaje de error
-        if(sonTodosVerdaderos(validador)){
-            addToCartButton.disabled = false;
-         }
+        errorMessage.style.display = "none";
+        if (sonTodosVerdaderos(validador)) {
+          addToCartButton.disabled = false;
+        }
       }
-      // Muestra el mensaje "Por favor ingresa la frase personalizada" si está vacío
       emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
     }
 
-    // Función para mostrar/ocultar el campo de texto personalizado
+    // Función para mostrar/ocultar el campo de texto según la opción seleccionada
     function toggleCustomTextField() {
-      const isConMarcacionSelected = conMarcacionOption.checked;
-      const isDobleGrabadoSelected = dobleMarcadoOption.checked;
-      document.querySelector('.field-container').style.display = isConMarcacionSelected ? 'flex' : 'none';
-      document.querySelector('.field-container').style.display = isDobleGrabadoSelected ? 'flex' : 'none';
-      if ( dobleMarcadoOption.checked ) {
+      if (conFraseOption.checked) {
+        fieldContainer.style.display = 'flex';
         validador.VeintePalabras = false;
         validarTexto();
-      }else if (sinMarcacionOption.checked || conMarcacionOption.checked) {
-        validador.VeintePalabras = true; // Actualiza validador a true si "Sin marcación" está seleccionada
-        if(sonTodosVerdaderos(validador)){
-            addToCartButton.disabled = false;
-         }
+      } else if (sinFraseOption.checked) {
+        fieldContainer.style.display = 'none';
+        validador.VeintePalabras = true;
+        inputField.value = '';
+        errorMessage.style.display = 'none';
+        emptyMessage.style.display = 'none';
+        if (sonTodosVerdaderos(validador)) {
+          addToCartButton.disabled = false;
+        }
       }
     }
 
-    // Inicializa el campo según la opción predeterminada (Sin Marcación)
+    // Inicializar según la opción seleccionada por defecto
     toggleCustomTextField();
 
-    // Escucha los cambios de selección en las opciones de marcación
-    conMarcacionOption.addEventListener("change", toggleCustomTextField);
-    sinMarcacionOption.addEventListener("change", toggleCustomTextField);
-    dobleMarcadoOption.addEventListener("change", toggleCustomTextField);
+    // Escuchar cambios en las opciones
+    conFraseOption.addEventListener("change", toggleCustomTextField);
+    sinFraseOption.addEventListener("change", toggleCustomTextField);
 
-    // Muestra el mensaje de "Por favor ingresa la frase personalizada" desde el inicio
-    emptyMessage.style.display = "flex";
-
-
-
-    // Escucha el evento input y valida el texto cada vez que cambia
-    inputField.addEventListener("input", function () {
-
-      // Valida el texto y actualiza los mensajes
-      validarTexto();
-    });
+    // Validar texto cada vez que el usuario escribe
+    inputField.addEventListener("input", validarTexto);
   });
 </script>
 <style>

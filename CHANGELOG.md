@@ -121,6 +121,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2024-12-06
+
+### Changed
+
+#### Text Input Validation - Simplified Option Logic
+- **Breaking Change:** Removed support for 3-option "Grabado de frase" variants
+- All `-grabado.liquid` snippets now use 2-option logic: "Sin frase" / "Con frase"
+- Removed "Foto grabado adicional" (dobleMarcado) option support from all products
+
+#### Updated Snippets
+- **`10-words-grabado.liquid`** - Simplified to 2-option logic
+- **`12-words-grabado.liquid`** - Simplified to 2-option logic, removed secondary image uploader (Img2)
+- **`20-words-grabado.liquid`** - Simplified to 2-option logic
+
+### Improved
+
+#### Smart Option Detection
+All updated snippets now use intelligent option detection:
+1. **Primary method:** Searches for radio buttons by label text ("con frase" / "sin frase")
+2. **Fallback method:** Uses hardcoded element IDs if label search fails
+3. **Graceful degradation:** If options not found, validation auto-passes to prevent cart blocking
+
+#### Unique Element IDs
+- Added unique suffixes to error/empty message elements (`-10`, `-12`, `-20`)
+- Prevents ID conflicts when multiple word-validation snippets are on the same page
+
+### Removed
+- `validador.Img2` initialization from `12-words-grabado.liquid`
+- `initDirectImageUploader()` call for secondary image from `12-words-grabado.liquid`
+- All references to `dobleMarcadoOption` across grabado snippets
+
+### Migration Notes
+
+#### From v1.0.0 to v1.1.0
+
+**Prerequisites:**
+1. Remove "Foto grabado adicional" option from all Shopify products that had it
+2. Ensure products only have 2 options: "Sin frase" and "Con frase"
+
+**Steps:**
+1. Replace the following snippet files in your theme:
+   - `10-words-grabado.liquid`
+   - `12-words-grabado.liquid`
+   - `20-words-grabado.liquid`
+2. Verify all affected product pages work correctly
+3. Test cart button enables when:
+   - "Sin frase" is selected (no text required)
+   - "Con frase" is selected AND valid phrase entered
+
+**Breaking Changes:**
+- Products using the old 3-option system will need Shopify admin updates
+- The removed `Img2` validation in `12-words-grabado.liquid` means secondary image upload is no longer supported for those products
+
+---
+
 ## [Unreleased]
 
 ### Planned Enhancements
@@ -132,6 +187,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.1.0 | 2024-12-06 | Simplified grabado snippets to 2-option logic, smart option detection |
 | 1.0.0 | 2024-12-06 | Initial release with full customization system |
 
 ---

@@ -2,7 +2,6 @@
       let validador = {}
       const addToCartButton = document.querySelector('[name="add"]');
       addToCartButton.disabled = true;
-      console.log('[DEBUG validador] Initialized - cart button disabled');
 
       // Selecciona el contenedor o nodo raíz que quieres observar para detectar cambios
     const targetNode = document.body; // Puedes especificar cualquier nodo que sea el contenedor de los elementos que pueden cambiar
@@ -24,11 +23,9 @@
         }
         if(sonTodosVerdaderos(validador)){
             const addToCartButton = document.querySelector('[name="add"]');
-            console.log("[DEBUG validador] ALL TRUE - Enabling cart. State:", JSON.stringify(validador));
             addToCartButton.disabled = false;
         }else{
           const addToCartButton = document.querySelector('[name="add"]');
-          console.log("[DEBUG validador] NOT all true - Cart disabled. State:", JSON.stringify(validador));
           addToCartButton.disabled = true;
         }
       }
