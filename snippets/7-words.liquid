@@ -1,0 +1,141 @@
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    validador.SietePalabras = false;
+  })
+  function sonTodosVerdaderos(objeto) {
+    return Object.values(objeto).every(valor => valor === true);
+  }
+</script>
+<div class="field-container" style="display: block;">
+  <div class="field">
+    <input
+      form="{{ product_form_id }}"
+      id="nombre-input-2"
+      class="field__input"
+      type="text"
+      name="properties[Tu frase personalizada]"
+    >
+    <label class="field__label" for="nombre-input-2">Escribe tu frase personalizada: (máximo 6 palabras)</label>
+  </div>
+  <p id="error-message" class="error-message">Solo se permiten hasta 6 palabras</p>
+  <p id="empty-message" class="empty-message">
+    Por favor ingresa la frase personalizada <span class="question-mark">!</span>
+  </p>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputField = document.getElementById("nombre-input-2");
+    const errorMessage = document.getElementById("error-message");
+    const emptyMessage = document.getElementById("empty-message");
+    const conMarcacionOption = document.getElementById("template--16560373039173__main-2-1"); // ID de "Con marcación"
+    const sinMarcacionOption = document.getElementById("template--16560373039173__main-2-0"); // ID de "Sin marcación"
+
+    // Función para mostrar/ocultar el campo de texto personalizado
+    function toggleCustomTextField() {
+      const isConMarcacionSelected = conMarcacionOption.checked;
+      document.querySelector('.field-container').style.display = isConMarcacionSelected ? 'flex' : 'none';
+      if (conMarcacionOption.checked) {
+        validador.SietePalabras = false;
+        validarTexto();
+      }else if (sinMarcacionOption.checked) {
+        validador.SietePalabras = true; // Actualiza validador a true si "Sin marcación" está seleccionada
+        if(sonTodosVerdaderos(validador)){
+            addToCartButton.disabled = false;
+         }
+      }
+    }
+
+    // Inicializa el campo según la opción predeterminada (Sin Marcación)
+    toggleCustomTextField();
+
+    // Escucha los cambios de selección en las opciones de marcación
+    conMarcacionOption.addEventListener("change", toggleCustomTextField);
+    sinMarcacionOption.addEventListener("change", toggleCustomTextField);
+
+    // Muestra el mensaje de "Por favor ingresa la frase personalizada" desde el inicio
+    emptyMessage.style.display = "flex";
+
+    // Función para validar el campo de texto
+    function validarTexto() {
+      const words = inputField.value.split(/\s+/).filter(word => word.length > 0);
+      const wordCount = words.length;
+      // Verifica si el campo está vacío o no cumple las condiciones
+      if (wordCount === 0 || wordCount > 7 ) {
+         validador.SietePalabras = false;
+        errorMessage.style.display = wordCount > 0 ? "block" : "none"; // Muestra u oculta error
+      } else {
+        validador.SietePalabras = true;
+        errorMessage.style.display = "none"; // Oculta mensaje de error
+        if(sonTodosVerdaderos(validador)){
+            addToCartButton.disabled = false;
+         }
+      }
+
+      // Muestra el mensaje "Por favor ingresa la frase personalizada" si está vacío
+      emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+    }
+
+    // Escucha el evento input y valida el texto cada vez que cambia
+    inputField.addEventListener("input", function () {
+
+      // Valida el texto y actualiza los mensajes
+      validarTexto();
+    });
+  });
+</script>
+<style>
+  .field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 300px;
+  }
+
+  .field__input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+  }
+
+  .field__input:focus {
+    border-color: #ff6600;
+    outline: none;
+  }
+
+  .field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field__label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  .error-message, .empty-message {
+    color: #961212;
+    font-size: 12px;
+  }
+
+  .error-message {
+    display: none;
+  }
+
+  .empty-message {
+    display: flex;
+    align-items: center;
+  }
+
+  .question-mark {
+    font-weight: bold;
+    color: red;
+    margin-right: 5px;
+  }
+</style>

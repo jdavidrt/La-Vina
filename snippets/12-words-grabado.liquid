@@ -1,0 +1,117 @@
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    validador.DocePalabras = false;
+  })
+  function sonTodosVerdaderos(objeto) {
+    return Object.values(objeto).every(valor => valor === true);
+  }
+</script>
+<div class="field-container" style="display: block;">
+  <div class="field">
+    <input
+      form="{{ product_form_id }}"
+      id="input-12palabras"
+      class="field__input"
+      type="text"
+      name="properties[Tu frase personalizada]"
+    >
+    <label class="field__label" for="input-12palabras">Escribe tu frase personalizada: (máximo 11 palabras)</label>
+  </div>
+  <p id="error-message" class="error-message">Solo se permiten hasta 11 palabras</p>
+  <p id="empty-message" class="empty-message">
+    Por favor ingresa la frase personalizada <span class="question-mark">!</span>
+  </p>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    validador.Img2 = false;
+    
+    // Initialize direct uploader - one clean line
+    initDirectImageUploader({
+      buttonId: 'openmodal2Button2',
+      inputId: 'img2',
+      validator: validador,
+      validatorKey: 'Img2'
+    });
+    
+    const fileContainer2 = document.querySelector('.file_container2');
+    const conMarcacionOption = document.getElementById("template--16579220963397__main-1-1");
+    const sinMarcacionOption = document.getElementById("template--16579220963397__main-1-0");
+    const dobleMarcadoOption = document.getElementById("template--16579220963397__main-1-2");
+    
+    function toggleFileContainer() {
+      const isDobleGrabadoSelected = dobleMarcadoOption.checked;      
+      fileContainer2.style.display = (isDobleGrabadoSelected)? "block" : "none";
+      
+      if (dobleMarcadoOption.checked) {
+        validador.Img2 = false;
+      } else if (sinMarcacionOption.checked || conMarcacionOption.checked) {
+        validador.Img2 = true;
+        if (Object.values(validador).every(v => v === true)) {
+          addToCartButton.disabled = false;
+        }
+      }
+    }
+
+    toggleFileContainer();
+    conMarcacionOption.addEventListener("change", toggleFileContainer);
+    sinMarcacionOption.addEventListener("change", toggleFileContainer);
+    dobleMarcadoOption.addEventListener("change", toggleFileContainer);
+  });
+</script>
+<style>
+  .field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 300px;
+  }
+
+  .field__input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+  }
+
+  .field__input:focus {
+    border-color: #ff6600;
+    outline: none;
+  }
+
+  .field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field__label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  .error-message, .empty-message {
+    color: #961212;
+    font-size: 12px;
+  }
+
+  .error-message {
+    display: none;
+  }
+
+  .empty-message {
+    display: flex;
+    align-items: center;
+  }
+
+  .question-mark {
+    font-weight: bold;
+    color: red;
+    margin-right: 5px;
+  }
+</style>

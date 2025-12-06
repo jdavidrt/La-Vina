@@ -1,0 +1,195 @@
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Inicializar validador para la imagen
+    validador.Img1 = false;
+  });
+
+  function sonTodosVerdaderos(objeto) {
+    return Object.values(objeto).every(valor => valor === true);
+  }
+</script>
+<div class="file_container">
+  <p class="line-item-property__field">
+    <!-- Button to open the modal -->
+    <button type="button" id="openModalButton" class="input-preview" style="transform: scale(1.2); transform-origin: center;">📷 Sube tu foto</button>
+  </p>
+</div>
+
+<!-- Modal HTML -->
+<div id="recommendationModal" class="modal">
+  <div class="modal-content">
+    <h2>Consideraciones:</h2>
+    <p>
+      Antes de subir tu fotografía, asegúrate de seguir las <em><b>Recomendaciones para una buena foto</b></em>, estas las encontrarás en la descripción de este accesorio.
+    </p>
+    <!-- Botón dentro del modal para abrir el cuadro de selección de archivos -->
+    <button id="confirmButton">¡Listo! Agregar Imagen</button>
+
+    <!-- Input de archivo oculto -->
+    <input
+      form="{{ product_form_id }}"
+      id="img"
+      class="input-preview__src"
+      type="file"
+      name="properties[Agrega tu imagen]"
+      accept="image/png, image/jpeg"
+      style="display:none;"
+    >
+    <button id="closeButton" class="input-preview__src">Cerrar</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    validador.Img1 = false;
+    
+    const fileImage = document.querySelector('#img');
+    const openModalButton = document.getElementById("openModalButton");
+    const filePreview = document.querySelector('.input-preview');
+
+    // Direct file picker on button click
+    openModalButton.onclick = function() {
+      fileImage.click();
+    };
+
+    // Preview image on file selection
+    fileImage.onchange = function() {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        filePreview.style.height = "170px";
+        filePreview.style.backgroundImage = "url(" + e.target.result + ")";
+        filePreview.classList.add("has-image");
+        validador.Img1 = true;
+        console.log('Imagen cargada correctamente. Validador actualizado:', validador);
+        
+        if(sonTodosVerdaderos(validador)){
+          addToCartButton.disabled = false;
+        }
+      };
+      reader.readAsDataURL(this.files[0]);
+    };
+  });
+</script>
+
+<style>
+  #confirmButton, #closeButton {
+    background-color: black;
+    color: white;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    width: 70%;
+    margin: 10px auto;
+    display: block;
+    text-align: center;
+    white-space: nowrap; /* Evita que el texto haga un salto de línea */
+  }
+
+  #confirmButton:hover, #closeButton:hover {
+    background-color: #333;
+  }
+
+  .line-item-property__field {
+    margin: 0px;
+  }
+
+  .file_container {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+  }
+
+  .input-preview {
+    font-family: Assistant, sans-serif;
+    border-radius: 30px;
+    background-color: black;
+    color: white;
+    font-size: 14px;
+    width: auto;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: ease-in-out 750ms;
+    position: relative;
+    margin: .7rem .5rem .2rem 0;
+    white-space: nowrap;
+  }
+
+  .input-preview:hover {
+    background-color: #333;
+  }
+
+  .input-preview__src {
+    display: none;
+  }
+
+  .input-preview::after {
+    content: "";
+    text-align: center;
+    font-size: 1em;
+  }
+
+  .has-image::before {
+    border-radius: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(50, 50, 50, 0.2);
+    content: " ";
+    transition: ease-in-out 750ms;
+  }
+
+  .has-image::after {
+    color: white;
+  }
+
+  /* modal styling */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .modal-content h2 {
+    margin-top: 0;
+  }
+
+  .modal-content ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .modal-content ul li {
+    text-align: left;
+    padding: 8px 0;
+  }
+</style>
+

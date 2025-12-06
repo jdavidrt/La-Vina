@@ -1,0 +1,58 @@
+<script>
+      let validador = {}
+      const addToCartButton = document.querySelector('[name="add"]');
+      addToCartButton.disabled = true;
+      console.log('[DEBUG validador] Initialized - cart button disabled');
+
+      // Selecciona el contenedor o nodo raíz que quieres observar para detectar cambios
+    const targetNode = document.body; // Puedes especificar cualquier nodo que sea el contenedor de los elementos que pueden cambiar
+
+    // Configura las opciones de observación
+    const config = { childList: true, subtree: true };
+
+    function sonTodosVerdaderos(objeto) {
+    return Object.values(objeto).every(valor => valor === true);
+  }
+    // Crea el observador que se activará en cada cambio
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+
+        //console.log("El contenido de la página ha cambiado.");
+            //console.log('Validador: ', validador)
+           //console.log("Todos Verd: ", sonTodosVerdaderos(validador))
+        }
+        if(sonTodosVerdaderos(validador)){
+            const addToCartButton = document.querySelector('[name="add"]');
+            console.log("[DEBUG validador] ALL TRUE - Enabling cart. State:", JSON.stringify(validador));
+            addToCartButton.disabled = false;
+        }else{
+          const addToCartButton = document.querySelector('[name="add"]');
+          console.log("[DEBUG validador] NOT all true - Cart disabled. State:", JSON.stringify(validador));
+          addToCartButton.disabled = true;
+        }
+      }
+    });
+
+    // Inicia la observación con el nodo y la configuración seleccionada
+    observer.observe(targetNode, config);
+
+  // Evitar emojis
+  document.addEventListener("DOMContentLoaded", function () {
+    function eliminarEmojis(text) {
+      return text.replace(/\p{Emoji}/gu, "");
+    }
+
+    function validarInputSinEmojis(event) {
+      const input = event.target;
+      const valorSinEmojis = eliminarEmojis(input.value);
+      if (input.value !== valorSinEmojis) {
+        input.value = valorSinEmojis;
+      }
+    }
+
+    document.querySelectorAll("input[type='text'], textarea").forEach(input => {
+      input.addEventListener("input", validarInputSinEmojis);
+    });
+  });
+</script>

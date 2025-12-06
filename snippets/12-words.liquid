@@ -1,0 +1,145 @@
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    validador.DocePalabras = false;
+  });
+  function sonTodosVerdaderos(objeto) {
+    return Object.values(objeto).every(valor => valor === true);
+  }
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputField = document.querySelector("#nombre-input-2")
+    const errorMessage = document.getElementById("error-message");
+    const emptyMessage = document.getElementById("empty-message");
+    const conMarcacionOption = document.getElementById("template--16560519938117__main-2-1"); // ID de "Con marcación"
+    const sinMarcacionOption = document.getElementById("template--16560519938117__main-2-0"); // ID de "Sin marcación"
+
+    // Función para mostrar/ocultar el campo de texto personalizado
+    function toggleCustomTextField() {
+      const isConMarcacionSelected = conMarcacionOption.checked;
+      document.querySelector('.field-container').style.display = isConMarcacionSelected ? 'flex' : 'none';
+      if (conMarcacionOption.checked) {
+        validador.DocePalabras = false;
+        validarTexto();
+      }else if (sinMarcacionOption.checked) {
+        validador.DocePalabras = true; // Actualiza validador a true si "Sin marcación" está seleccionada
+        if(sonTodosVerdaderos(validador)){
+            addToCartButton.disabled = false;
+         }
+      }
+    }
+
+    // Inicializa el campo según la opción predeterminada (Sin Marcación)
+    toggleCustomTextField();
+
+    // Escucha los cambios de selección en las opciones de marcación
+    conMarcacionOption.addEventListener("change", toggleCustomTextField);
+    sinMarcacionOption.addEventListener("change", toggleCustomTextField);
+
+    // Muestra el mensaje de "Por favor ingresa la frase personalizada" desde el inicio
+    emptyMessage.style.display = "flex";
+
+    // Función para validar el campo de texto
+    function validarTexto() {
+      const words = inputField.value.split(/\s+/).filter(word => word.length > 0);
+      const wordCount = words.length;
+
+      // Verifica si el campo está vacío o no cumple las condiciones
+      if (wordCount === 0 || wordCount > 12) {  // Cambiamos el límite a 10 palabras
+        validador.DocePalabras = false; // Siempre que haya error o esté vacío
+        errorMessage.style.display = wordCount > 0 ? "block" : "none"; // Muestra u oculta error
+      } else {
+        validador.DocePalabras = true; // Solo si cumple las condiciones
+        errorMessage.style.display = "none"; // Oculta mensaje de error
+        if(sonTodosVerdaderos(validador)){
+            addToCartButton.disabled = false;
+         }
+      }
+
+      // Muestra el mensaje "Por favor ingresa la frase personalizada" si está vacío
+      emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+    }
+
+    // Escucha el evento input y valida el texto cada vez que cambia
+    inputField.addEventListener("input", function () {
+      // Valida el texto y actualiza los mensajes
+      validarTexto();
+    });
+  });
+</script>
+
+<div class="field-container">
+  <!-- Campo de entrada de texto personalizado con estilo y etiqueta -->
+  <div class="field">
+    <input
+      class="field__input"
+      type="text"
+      form="{{ product_form_id }}"
+      name="properties[Tu frase personalizada]"
+      id="nombre-input-2"
+      required
+    >
+    <label class="field__label" for="nombre-input-2">Escribe tu frase personalizada: (máximo 11 palabras)</label>
+  </div>
+  <p id="error-message" class="error-message">Solo se permiten hasta 11 palabras</p>
+  <p id="empty-message" class="empty-message">
+    Por favor ingresa la frase personalizada <span class="question-mark">!</span>
+  </p>
+</div>
+
+<style>
+  .field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 300px;
+  }
+
+  .field__input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+  }
+
+  .field__input:focus {
+    border-color: #ff6600;
+    outline: none;
+  }
+
+  .field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field__label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  .error-message, .empty-message {
+    color: #961212;
+    font-size: 12px;
+  }
+
+  .error-message {
+    display: none;
+  }
+
+  .empty-message {
+    display: flex;
+    align-items: center;
+  }
+
+  .question-mark {
+    font-weight: bold;
+    color: #961212;
+    margin-right: 5px;
+  }
+</style>

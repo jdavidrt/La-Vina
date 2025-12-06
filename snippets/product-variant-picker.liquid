@@ -1,0 +1,59 @@
+{% comment %}
+  Product Variant Picker - Shape variant support
+{% endcomment %}
+
+{% unless product.has_only_default_variant %}
+  <variant-selects 
+    id="variant-selects-{{ section.id }}" 
+    class="no-js-hidden" 
+    data-section="{{ section.id }}"
+    data-url="{{ product.url }}"
+  >
+    {% for option in product.options_with_values %}
+      <fieldset class="js product-form__input product-form__input--pill">
+        <legend class="form__label">{{ option.name }}</legend>
+        
+        {% comment %} Determine wrapper class {% endcomment %}
+        {% assign wrapper_class = 'variant-input-wrapper' %}
+        {% if option.name == 'Diseño de collar' %}
+          {% assign wrapper_class = 'variant-input-wrapper shape-variant-group' %}
+        {% endif %}
+        
+        <div class="{{ wrapper_class }}">
+          {% for value in option.values %}
+            {% comment %} Determine shape type {% endcomment %}
+            {% assign shape_type = '' %}
+            {% if value contains 'corazón' %}
+              {% assign shape_type = 'heart' %}
+            {% elsif value contains 'redondo' %}
+              {% assign shape_type = 'circle' %}
+            {% endif %}
+            
+            <input
+              type="radio"
+              id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+              name="{{ option.name }}"
+              value="{{ value | escape }}"
+              form="{{ product_form_id }}"
+              {% if option.selected_value == value %}checked{% endif %}
+              data-option-position="{{ option.position }}"
+            >
+            <label 
+              for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+              {% if shape_type != '' %}data-shape-type="{{ shape_type }}"{% endif %}
+            >
+              <span class="variant-label-text">{{ value }}</span>
+            </label>
+          {% endfor %}
+        </div>
+        
+      </fieldset>
+    {% endfor %}
+
+    <script type="application/json">
+      {{ product.variants | json }}
+    </script>
+  </variant-selects>
+{% endunless %}
+
+{% render 'variant-shape-selector' %}

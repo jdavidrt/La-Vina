@@ -1,0 +1,230 @@
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    validador.Img2 = false;
+  });
+    function sonTodosVerdaderos(objeto) {
+    return Object.values(objeto).every(valor => valor === true);
+  }
+</script>
+<div class="file_container2" style="display: block;">
+  <p class="line-item-property__field">
+    <button type="button" id="openmodal2Button2" class="input-preview2">Agrega la segunda imagen</button>
+  </p>
+</div>
+
+<!-- modal2 HTML -->
+<div id="recommendationmodal2" class="modal2">
+  <div class="modal2-content">
+    <h2>Consideraciones:</h2>
+    <p>
+      Antes de subir tu fotografía, asegúrate de seguir las <em><b>Recomendaciones para una buena foto</b></em
+      >, estas las encontrarás en la descripción de este accesorio.
+    </p>
+    <button id="confirmButton2">¡Listo! Agregar Imagen</button>
+    <input
+      form="{{ product_form_id }}"
+      id="img2"
+      class="input-preview2__src"
+      type="file"
+      name="properties[Segunda imagen ]"
+      accept="image/png, image/jpeg"
+      style="display:none;"
+    >
+    <button id="closeButton2" class="input-preview2__src">Cerrar</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    validador.Img2 = false;
+    
+    const fileImage2 = document.querySelector('#img2');
+    const openmodal2Button2 = document.getElementById("openmodal2Button2");
+    const fileContainer2 = document.querySelector('.file_container2');
+
+    let conMarcacionOption = document.getElementById("template--16577217953861__main-3-1");
+    let sinMarcacionOption = document.getElementById("template--16577217953861__main-3-0");
+    let dobleMarcadoOption = document.getElementById("template--16577217953861__main-3-2");
+    
+    // Si alguna de las opciones no se encuentra, intenta con IDs alternativos
+    if (!conMarcacionOption || !sinMarcacionOption || !dobleMarcadoOption) {
+      conMarcacionOption = document.getElementById("template--16577217953861__main-1-1");
+      sinMarcacionOption = document.getElementById("template--16577217953861__main-1-0");
+      dobleMarcadoOption = document.getElementById("template--16577217953861__main-1-2");
+    }
+    
+    // Asegúrate de que todos los elementos necesarios estén disponibles antes de continuar
+    if (!conMarcacionOption || !sinMarcacionOption || !dobleMarcadoOption) {
+      console.error("No se pudieron encontrar las opciones de marcación necesarias.");
+      return;
+    } else {
+      console.log("Opciones de marcación encontradas correctamente.");
+    }
+    
+    // Direct file picker on button click
+    openmodal2Button2.onclick = function() {
+      fileImage2.click();
+    };
+
+    // Preview image on file selection
+    fileImage2.onchange = function() {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        openmodal2Button2.style.height = "170px";
+        openmodal2Button2.style.backgroundImage = "url(" + e.target.result + ")";
+        openmodal2Button2.classList.add("has-image");
+        validador.Img2 = true;
+        
+        if(sonTodosVerdaderos(validador)){
+          addToCartButton.disabled = false;
+        }
+      };
+      reader.readAsDataURL(this.files[0]);
+    };
+
+    // Mostrar u ocultar el contenedor de subida de imagen
+    function toggleFileContainer() {
+      const isDobleGrabadoSelected = dobleMarcadoOption.checked;      
+      fileContainer2.style.display = (isDobleGrabadoSelected) ? "block" : "none";
+      
+      if (dobleMarcadoOption.checked) {
+        validador.Img2 = false;
+      } else if (sinMarcacionOption.checked || conMarcacionOption.checked) {
+        validador.Img2 = true;
+        if(sonTodosVerdaderos(validador)){
+          addToCartButton.disabled = false;
+        }
+      }
+    }
+
+    // Inicializa el contenedor según la selección predeterminada
+    toggleFileContainer();
+
+    // Escucha cambios en las opciones de marcación
+    conMarcacionOption.addEventListener("change", toggleFileContainer);
+    sinMarcacionOption.addEventListener("change", toggleFileContainer);
+    dobleMarcadoOption.addEventListener("change", toggleFileContainer);
+  });
+</script>
+
+<style>
+  #confirmButton2, #closeButton2 {
+    background-color: black;
+    color: white;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    width: 70%;
+    margin: 10px auto;
+    display: block;
+    text-align: center;
+    white-space: nowrap; /* Evita que el texto haga un salto de línea */
+  }
+
+  #confirmButton2:hover, #closeButton2:hover {
+    background-color: #333;
+  }
+
+  .line-item-property__field {
+    margin: 0px;
+  }
+
+  .file_container2 {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+  }
+
+  .input-preview2 {
+      font-family: Assistant, sans-serif;
+      border-radius: 30px; /* Bordes redondeados */
+      background-color: black; /* Fondo negro */
+      color: white;
+      font-size: 14px;
+      width: auto;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      background-size: cover; /* Asegura que la imagen cubra todo el área */
+      background-repeat: no-repeat;
+      background-position: center;
+      transition: ease-in-out 750ms;
+      position: relative;
+      margin: .7rem .5rem .2rem 0;
+      white-space: nowrap; /* Evita que el texto haga un salto de línea */
+  }
+
+  .input-preview2:hover {
+    background-color: #333;
+  }
+
+  .input-preview2__src {
+    display: none; /* El input de archivo está oculto */
+  }
+
+  .input-preview2::after {
+    content: "";
+    text-align: center;
+    font-size: 1em;
+  }
+
+  .has-image::before {
+    border-radius: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(50, 50, 50, 0.2);
+    content: " ";
+    transition: ease-in-out 750ms;
+  }
+
+  .has-image::after {
+    color: white;
+  }
+
+  /* modal2 styling */
+  .modal2 {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  .modal2-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .modal2-content h2 {
+    margin-top: 0;
+  }
+
+  .modal2-content ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .modal2-content ul li {
+    text-align: left;
+    padding: 8px 0;
+  }
+</style>

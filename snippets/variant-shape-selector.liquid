@@ -1,0 +1,102 @@
+{% comment %}
+  Variant Shape Selector - Pure CSS with SVG shapes
+{% endcomment %}
+
+<style>
+  /* Shape variant container */
+  .shape-variant-group {
+    display: flex !important;
+    gap: 20px !important;
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+  }
+
+  /* Hide radio inputs */
+  .shape-variant-group input[type="radio"] {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+    clip: rect(0, 0, 0, 0) !important;
+  }
+
+  /* Base label styling - increased width for two-line text */
+  .shape-variant-group label {
+    display: inline-block !important;
+    position: relative !important;
+    cursor: pointer !important;
+    width: 90px !important;
+    padding-top: 60px !important;
+    text-align: center !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    vertical-align: top !important;
+  }
+
+  /* Circle shape - positioned absolutely at the top */
+  .shape-variant-group label[data-shape-type="circle"]::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 50px !important;
+    height: 50px !important;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='45' fill='white' stroke='black' stroke-width='2'/%3E%3C/svg%3E") !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    transition: all 0.3s ease !important;
+  }
+
+  /* Circle checked state */
+  .shape-variant-group input[type="radio"]:checked + label[data-shape-type="circle"]::before {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='45' fill='black' stroke='black' stroke-width='2'/%3E%3C/svg%3E") !important;
+  }
+
+  /* Circle hover */
+  .shape-variant-group label[data-shape-type="circle"]:hover::before {
+    transform: translateX(-50%) scale(1.1) !important;
+  }
+
+  /* Heart shape - positioned absolutely at the top */
+  .shape-variant-group label[data-shape-type="heart"]::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 50px !important;
+    height: 50px !important;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,92 L46,88 C20,64 6,51 6,36 C6,24 15,16 27,16 C34,16 41,19 46,25 L50,29 L54,25 C59,19 66,16 73,16 C85,16 94,24 94,36 C94,51 80,64 54,88 Z' fill='white' stroke='black' stroke-width='2'/%3E%3C/svg%3E") !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    transition: all 0.3s ease !important;
+  }
+
+  /* Heart checked state */
+  .shape-variant-group input[type="radio"]:checked + label[data-shape-type="heart"]::before {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,92 L46,88 C20,64 6,51 6,36 C6,24 15,16 27,16 C34,16 41,19 46,25 L50,29 L54,25 C59,19 66,16 73,16 C85,16 94,24 94,36 C94,51 80,64 54,88 Z' fill='black' stroke='black' stroke-width='2'/%3E%3C/svg%3E") !important;
+  }
+
+  /* Heart hover */
+  .shape-variant-group label[data-shape-type="heart"]:hover::before {
+    transform: translateX(-50%) scale(1.1) !important;
+  }
+
+  /* Text styling - wider area for two-line text */
+  .shape-variant-group label .variant-label-text {
+    display: block !important;
+    width: 100% !important;
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+    color: #000 !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    hyphens: auto !important;
+    text-align: center !important;
+    padding-top: 5px !important;
+  }
+</style>

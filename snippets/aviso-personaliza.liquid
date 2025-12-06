@@ -1,0 +1,33 @@
+<p id="customization-warning" style="font-size: 12px; color: #800000; display: none;">
+  Sube tu foto para añadir el producto al carrito
+</p>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const warningElement = document.getElementById("customization-warning");
+
+    // Función para actualizar la visibilidad del mensaje de advertencia
+    function updateWarning() {
+      if (typeof validador !== "undefined") {
+        const imgValid = Object.entries(validador)
+          .filter(([key]) => key.startsWith("Img"))
+          .every(([, value]) => value === true);
+
+        warningElement.style.display = imgValid ? "none" : "block";
+      } else {
+        console.error("El objeto 'validador' no está definido.");
+      }
+    }
+
+    // Configura un observador para escuchar cambios en el contenido de la página
+    const observer = new MutationObserver(() => {
+      updateWarning();
+    });
+
+    // Observa todo el cuerpo del documento para detectar cambios
+    observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+
+    // Llama a la función inicialmente para asegurar el estado correcto
+    updateWarning();
+  });
+</script>

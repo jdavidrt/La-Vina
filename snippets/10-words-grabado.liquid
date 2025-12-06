@@ -1,0 +1,187 @@
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    validador.DiezPalabras = false;
+    console.log('[DEBUG 10-words] Initialized validador.DiezPalabras = false');
+    console.log('[DEBUG 10-words] Current validador state:', JSON.stringify(validador));
+  })
+    function sonTodosVerdaderos(objeto) {
+    return Object.values(objeto).every(valor => valor === true);
+  }
+</script>
+<div class="field-container" style="display: block;">
+  <div class="field">
+    <input
+      form="{{ product_form_id }}"
+      id="input-10palabras"
+      class="field__input"
+      type="text"
+      name="properties[Tu frase personalizada]"
+    >
+    <label class="field__label" for="input-10palabras">Escribe tu frase personalizada: (máximo 9 palabras)</label>
+  </div>
+  <p id="error-message" class="error-message">Solo se permiten hasta 9 palabras</p>
+  <p id="empty-message" class="empty-message">
+    Por favor ingresa la frase personalizada <span class="question-mark">!</span>
+  </p>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputField = document.querySelector("#input-10palabras")
+    const errorMessage = document.getElementById("error-message");
+    const emptyMessage = document.getElementById("empty-message");
+    // Intenta obtener las opciones inicialmente con los IDs originales
+    let conMarcacionOption = document.getElementById("template--16577217953861__main-3-2");
+    let sinMarcacionOption = document.getElementById("template--16577217953861__main-3-0");
+    let dobleMarcadoOption = document.getElementById("template--16577217953861__main-3-1");
+
+    console.log('[DEBUG 10-words] Initial ID search (main-3-X):');
+    console.log('  conMarcacionOption (3-2):', conMarcacionOption);
+    console.log('  sinMarcacionOption (3-0):', sinMarcacionOption);
+    console.log('  dobleMarcadoOption (3-1):', dobleMarcadoOption);
+
+    // Si alguna de las opciones no se encuentra, intenta con IDs alternativos
+    if (!conMarcacionOption || !sinMarcacionOption || !dobleMarcadoOption) {
+      console.log('[DEBUG 10-words] Trying alternate IDs (main-1-X)...');
+      conMarcacionOption = document.getElementById("template--16577217953861__main-1-2");
+      sinMarcacionOption = document.getElementById("template--16577217953861__main-1-0");
+      dobleMarcadoOption = document.getElementById("template--16577217953861__main-1-1");
+      console.log('  conMarcacionOption (1-2):', conMarcacionOption);
+      console.log('  sinMarcacionOption (1-0):', sinMarcacionOption);
+      console.log('  dobleMarcadoOption (1-1):', dobleMarcadoOption);
+    }
+
+    // Asegúrate de que todos los elementos necesarios estén disponibles antes de continuar
+    if (!conMarcacionOption || !sinMarcacionOption || !dobleMarcadoOption) {
+      console.error("[DEBUG 10-words] MISSING OPTIONS - This is likely the problem!");
+      console.error("  conMarcacionOption found:", !!conMarcacionOption);
+      console.error("  sinMarcacionOption found:", !!sinMarcacionOption);
+      console.error("  dobleMarcadoOption found:", !!dobleMarcadoOption);
+    } else {
+      console.log("[DEBUG 10-words] All options found correctly.");
+    }
+
+
+        // Función para validar el campo de texto
+    function validarTexto() {
+      const words = inputField.value.split(/\s+/).filter(word => word.length > 0);
+      const wordCount = words.length;
+
+      // Verifica si el campo está vacío o no cumple las condiciones
+      if (wordCount === 0 || wordCount > 10) {
+         validador.DiezPalabras = false;
+        errorMessage.style.display = wordCount > 0 ? "block" : "none"; // Muestra u oculta error
+      } else {
+        validador.DiezPalabras = true;
+        errorMessage.style.display = "none"; // Oculta mensaje de error
+        if(sonTodosVerdaderos(validador)){
+            addToCartButton.disabled = false;
+         }
+      }
+      // Muestra el mensaje "Por favor ingresa la frase personalizada" si está vacío
+      emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+    }
+
+    // Función para mostrar/ocultar el campo de texto personalizado
+    function toggleCustomTextField() {
+      console.log('[DEBUG 10-words] toggleCustomTextField called');
+      console.log('  conMarcacionOption:', conMarcacionOption, 'checked:', conMarcacionOption?.checked);
+      console.log('  sinMarcacionOption:', sinMarcacionOption, 'checked:', sinMarcacionOption?.checked);
+      console.log('  dobleMarcadoOption:', dobleMarcadoOption, 'checked:', dobleMarcadoOption?.checked);
+
+      const isConMarcacionSelected = conMarcacionOption?.checked;
+      const isDobleGrabadoSelected = dobleMarcadoOption?.checked;
+      document.querySelector('.field-container').style.display = isConMarcacionSelected ? 'flex' : 'none';
+      document.querySelector('.field-container').style.display = isDobleGrabadoSelected ? 'flex' : 'none';
+      if ( dobleMarcadoOption?.checked ) {
+        console.log('[DEBUG 10-words] dobleMarcadoOption is checked - requiring text validation');
+        validador.DiezPalabras = false;
+        validarTexto();
+      }else if (sinMarcacionOption?.checked || conMarcacionOption?.checked) {
+        console.log('[DEBUG 10-words] sinMarcacion or conMarcacion checked - setting DiezPalabras = true');
+        validador.DiezPalabras = true; // Actualiza validador a true si "Sin marcación" está seleccionada
+        if(sonTodosVerdaderos(validador)){
+            addToCartButton.disabled = false;
+         }
+      } else {
+        console.log('[DEBUG 10-words] No option matched! validador.DiezPalabras remains:', validador.DiezPalabras);
+      }
+      console.log('[DEBUG 10-words] After toggle, validador state:', JSON.stringify(validador));
+    }
+
+    // Inicializa el campo según la opción predeterminada (Sin Marcación)
+    toggleCustomTextField();
+
+    // Escucha los cambios de selección en las opciones de marcación
+    conMarcacionOption.addEventListener("change", toggleCustomTextField);
+    sinMarcacionOption.addEventListener("change", toggleCustomTextField);
+    dobleMarcadoOption.addEventListener("change", toggleCustomTextField);
+
+    // Muestra el mensaje de "Por favor ingresa la frase personalizada" desde el inicio
+    emptyMessage.style.display = "flex";
+
+
+
+    // Escucha el evento input y valida el texto cada vez que cambia
+    inputField.addEventListener("input", function () {
+
+      // Valida el texto y actualiza los mensajes
+      validarTexto();
+    });
+  });
+</script>
+<style>
+  .field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 300px;
+  }
+
+  .field__input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+  }
+
+  .field__input:focus {
+    border-color: #ff6600;
+    outline: none;
+  }
+
+  .field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field__label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  .error-message, .empty-message {
+    color: #961212;
+    font-size: 12px;
+  }
+
+  .error-message {
+    display: none;
+  }
+
+  .empty-message {
+    display: flex;
+    align-items: center;
+  }
+
+  .question-mark {
+    font-weight: bold;
+    color: red;
+    margin-right: 5px;
+  }
+</style>
