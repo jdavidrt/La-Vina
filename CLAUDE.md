@@ -120,6 +120,9 @@ La Vina/
 - Define SVG shapes in `variant-shape-selector.liquid` using data URLs
 - Use CSS pseudo-elements (::before) for shape rendering
 - Maintain absolute positioning to avoid layout shifts
+- **Text wrapping**: Labels use `word-break: keep-all` and `hyphens: none` to prevent mid-word breaks
+- **Color alignment**: `.color-variant-group` has `padding-left: 20px` and `gap: 60px` to align with shape selectors
+- **Color swatch size**: Color swatches are 50px × 50px to match shape icon size
 - Refer to [buttons-documentation.md](documentation/buttons-documentation.md) for detailed customization guide
 
 ### Testing Checklist

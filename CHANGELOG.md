@@ -176,6 +176,32 @@ All updated snippets now use intelligent option detection:
 
 ---
 
+## [1.2.0] - 2026-01-02
+
+### Fixed
+
+#### Shape Variant Selector - Text Wrapping
+- **Fixed text breaking into 3 lines** - Labels like "Dije corazón" were incorrectly hyphenating into "Dije / cora- / zón"
+- Added `word-break: keep-all` to prevent breaking within words
+- Added `hyphens: none` with vendor prefixes (`-webkit-hyphens`) to prevent hyphenation
+- Reduced label width from 90px to 65px for tighter text fit
+
+#### Color Variant Alignment
+- **Added left padding to color selector** - Color circles now align with shape selector above
+- Added `padding-left: 20px` to `.color-variant-group`
+- **Increased color swatch size** - Color circles now match shape icon size (50px)
+- **Increased gap between color swatches** - Gap increased to 60px to align with shapes above
+
+### Changed
+
+#### variant-shape-selector.liquid
+- Label width: 90px → 65px
+- Text styling: Added `word-break: keep-all`, `hyphens: none`, `-webkit-hyphens: none`
+- Color variant container: `padding-left: 20px`, `gap: 60px`
+- Color swatch size: 40px → 50px (matches shape icons)
+
+---
+
 ## [Unreleased]
 
 ### Planned Enhancements
@@ -187,6 +213,7 @@ All updated snippets now use intelligent option detection:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.2.0 | 2026-01-02 | Fixed shape selector text wrapping, color variant alignment |
 | 1.1.0 | 2024-12-06 | Simplified grabado snippets to 2-option logic, smart option detection |
 | 1.0.0 | 2024-12-06 | Initial release with full customization system |
 

@@ -241,8 +241,12 @@ background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='ht
   line-height: 1.3 !important; /* Line spacing */
   color: #000 !important; /* Text color */
   padding-top: 5px !important; /* Space from shape */
+  word-break: keep-all !important; /* Prevent breaking within words */
+  hyphens: none !important; /* Prevent hyphenation */
 }
 ```
+
+**Important:** The `word-break: keep-all` and `hyphens: none` properties prevent text like "corazón" from being hyphenated into "cora-zón" across multiple lines.
 
 ### Changing Label Width
 
@@ -250,9 +254,11 @@ To accommodate longer text:
 
 ```css
 .shape-variant-group label {
-  width: 90px !important; /* Increase for longer text */
+  width: 65px !important; /* Default: 65px - increase for longer text */
 }
 ```
+
+**Note:** The default width (65px) is optimized for two-line Spanish labels like "Dije corazón". If your labels are longer, increase this value.
 
 ---
 
@@ -493,9 +499,26 @@ Create translations in `locales/`:
 }
 ```
 
-### 2. Add Color Variants
+### 2. Color Variant Swatches
 
-Combine shape with color variants by using multiple data attributes.
+The implementation includes color variant swatches that align with shape selectors:
+
+```css
+.color-variant-group {
+  display: flex !important;
+  gap: 60px !important;           /* Matches shape selector spacing */
+  padding-left: 20px !important;  /* Aligns with shapes above */
+}
+
+.color-variant-group label {
+  width: 50px !important;         /* Matches shape icon size */
+  height: 50px !important;
+}
+```
+
+**Color definitions:**
+- `plateado` (Silver): Gradient from #E8E8E8 to #A8A8A8
+- `dorado` (Gold): Gradient from #F5D061 to #C49B0C
 
 ### 3. Show Variant-Specific Images
 
