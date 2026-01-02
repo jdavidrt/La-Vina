@@ -2,13 +2,15 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     validador.Img2 = false;
-  });
+  })
+
     function sonTodosVerdaderos(objeto) {
     return Object.values(objeto).every(valor => valor === true);
   }
 </script>
-<div class="file_container2" style="display: block;">
+<div class="file_container2">
   <p class="line-item-property__field">
+    <!-- Solo un botón ahora, no un input -->
     <button type="button" id="openmodal2Button2" class="input-preview2">Agrega la segunda imagen</button>
   </p>
 </div>
@@ -21,13 +23,16 @@
       Antes de subir tu fotografía, asegúrate de seguir las <em><b>Recomendaciones para una buena foto</b></em
       >, estas las encontrarás en la descripción de este accesorio.
     </p>
+    <!-- Este es el botón dentro del modal2 que abre el cuadro de selección de archivos -->
     <button id="confirmButton2">¡Listo! Agregar Imagen</button>
+
+    <!-- El input de tipo "file" ahora está dentro del modal2 y está oculto -->
     <input
       form="{{ product_form_id }}"
       id="img2"
       class="input-preview2__src"
       type="file"
-      name="properties[Segunda imagen ]"
+      name="properties[Segunda imagen]"
       accept="image/png, image/jpeg"
       style="display:none;"
     >
@@ -38,30 +43,11 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     validador.Img2 = false;
-    
+
     const fileImage2 = document.querySelector('#img2');
     const openmodal2Button2 = document.getElementById("openmodal2Button2");
-    const fileContainer2 = document.querySelector('.file_container2');
+    const filePreview2 = document.querySelector('.input-preview2');
 
-    let conMarcacionOption = document.getElementById("template--16577217953861__main-3-1");
-    let sinMarcacionOption = document.getElementById("template--16577217953861__main-3-0");
-    let dobleMarcadoOption = document.getElementById("template--16577217953861__main-3-2");
-    
-    // Si alguna de las opciones no se encuentra, intenta con IDs alternativos
-    if (!conMarcacionOption || !sinMarcacionOption || !dobleMarcadoOption) {
-      conMarcacionOption = document.getElementById("template--16577217953861__main-1-1");
-      sinMarcacionOption = document.getElementById("template--16577217953861__main-1-0");
-      dobleMarcadoOption = document.getElementById("template--16577217953861__main-1-2");
-    }
-    
-    // Asegúrate de que todos los elementos necesarios estén disponibles antes de continuar
-    if (!conMarcacionOption || !sinMarcacionOption || !dobleMarcadoOption) {
-      console.error("No se pudieron encontrar las opciones de marcación necesarias.");
-      return;
-    } else {
-      console.log("Opciones de marcación encontradas correctamente.");
-    }
-    
     // Direct file picker on button click
     openmodal2Button2.onclick = function() {
       fileImage2.click();
@@ -69,42 +55,19 @@
 
     // Preview image on file selection
     fileImage2.onchange = function() {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        openmodal2Button2.style.height = "170px";
-        openmodal2Button2.style.backgroundImage = "url(" + e.target.result + ")";
-        openmodal2Button2.classList.add("has-image");
+      const reader2 = new FileReader();
+      reader2.onload = function(e) {
+        filePreview2.style.height = "170px";
+        filePreview2.style.backgroundImage = "url(" + e.target.result + ")";
+        filePreview2.classList.add("has-image");
         validador.Img2 = true;
-        
+
         if(sonTodosVerdaderos(validador)){
           addToCartButton.disabled = false;
         }
       };
-      reader.readAsDataURL(this.files[0]);
+      reader2.readAsDataURL(this.files[0]);
     };
-
-    // Mostrar u ocultar el contenedor de subida de imagen
-    function toggleFileContainer() {
-      const isDobleGrabadoSelected = dobleMarcadoOption.checked;      
-      fileContainer2.style.display = (isDobleGrabadoSelected) ? "block" : "none";
-      
-      if (dobleMarcadoOption.checked) {
-        validador.Img2 = false;
-      } else if (sinMarcacionOption.checked || conMarcacionOption.checked) {
-        validador.Img2 = true;
-        if(sonTodosVerdaderos(validador)){
-          addToCartButton.disabled = false;
-        }
-      }
-    }
-
-    // Inicializa el contenedor según la selección predeterminada
-    toggleFileContainer();
-
-    // Escucha cambios en las opciones de marcación
-    conMarcacionOption.addEventListener("change", toggleFileContainer);
-    sinMarcacionOption.addEventListener("change", toggleFileContainer);
-    dobleMarcadoOption.addEventListener("change", toggleFileContainer);
   });
 </script>
 
@@ -121,7 +84,7 @@
     margin: 10px auto;
     display: block;
     text-align: center;
-    white-space: nowrap; /* Evita que el texto haga un salto de línea */
+    white-space: nowrap;
   }
 
   #confirmButton2:hover, #closeButton2:hover {
@@ -166,7 +129,7 @@
   }
 
   .input-preview2__src {
-    display: none; /* El input de archivo está oculto */
+    display: none;
   }
 
   .input-preview2::after {
