@@ -1,15 +1,17 @@
 {%- assign product_form_id = 'product-form-' | append: section.id -%}
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener('DOMContentLoaded', function () {
     validador.Img2 = false;
   });
-    function sonTodosVerdaderos(objeto) {
-    return Object.values(objeto).every(valor => valor === true);
+  function sonTodosVerdaderos(objeto) {
+    return Object.values(objeto).every((valor) => valor === true);
   }
 </script>
 <div class="file_container2" style="display: block;">
   <p class="line-item-property__field">
-    <button type="button" id="openmodal2Button2" class="input-preview2">Agrega la segunda imagen</button>
+    <button type="button" id="openmodal2Button2" style="transform: scale(1.2)" class="input-preview2">
+      📷 Sube tu segunda foto
+    </button>
   </p>
 </div>
 
@@ -36,47 +38,47 @@
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener('DOMContentLoaded', function () {
     validador.Img2 = false;
-    
+
     const fileImage2 = document.querySelector('#img2');
-    const openmodal2Button2 = document.getElementById("openmodal2Button2");
+    const openmodal2Button2 = document.getElementById('openmodal2Button2');
     const fileContainer2 = document.querySelector('.file_container2');
 
-    let conMarcacionOption = document.getElementById("template--16577217953861__main-3-1");
-    let sinMarcacionOption = document.getElementById("template--16577217953861__main-3-0");
-    let dobleMarcadoOption = document.getElementById("template--16577217953861__main-3-2");
-    
+    let conMarcacionOption = document.getElementById('template--16577217953861__main-3-1');
+    let sinMarcacionOption = document.getElementById('template--16577217953861__main-3-0');
+    let dobleMarcadoOption = document.getElementById('template--16577217953861__main-3-2');
+
     // Si alguna de las opciones no se encuentra, intenta con IDs alternativos
     if (!conMarcacionOption || !sinMarcacionOption || !dobleMarcadoOption) {
-      conMarcacionOption = document.getElementById("template--16577217953861__main-1-1");
-      sinMarcacionOption = document.getElementById("template--16577217953861__main-1-0");
-      dobleMarcadoOption = document.getElementById("template--16577217953861__main-1-2");
+      conMarcacionOption = document.getElementById('template--16577217953861__main-1-1');
+      sinMarcacionOption = document.getElementById('template--16577217953861__main-1-0');
+      dobleMarcadoOption = document.getElementById('template--16577217953861__main-1-2');
     }
-    
+
     // Asegúrate de que todos los elementos necesarios estén disponibles antes de continuar
     if (!conMarcacionOption || !sinMarcacionOption || !dobleMarcadoOption) {
-      console.error("No se pudieron encontrar las opciones de marcación necesarias.");
+      console.error('No se pudieron encontrar las opciones de marcación necesarias.');
       return;
     } else {
-      console.log("Opciones de marcación encontradas correctamente.");
+      console.log('Opciones de marcación encontradas correctamente.');
     }
-    
+
     // Direct file picker on button click
-    openmodal2Button2.onclick = function() {
+    openmodal2Button2.onclick = function () {
       fileImage2.click();
     };
 
     // Preview image on file selection
-    fileImage2.onchange = function() {
+    fileImage2.onchange = function () {
       const reader = new FileReader();
-      reader.onload = function(e) {
-        openmodal2Button2.style.height = "170px";
-        openmodal2Button2.style.backgroundImage = "url(" + e.target.result + ")";
-        openmodal2Button2.classList.add("has-image");
+      reader.onload = function (e) {
+        openmodal2Button2.style.height = '170px';
+        openmodal2Button2.style.backgroundImage = 'url(' + e.target.result + ')';
+        openmodal2Button2.classList.add('has-image');
         validador.Img2 = true;
-        
-        if(sonTodosVerdaderos(validador)){
+
+        if (sonTodosVerdaderos(validador)) {
           addToCartButton.disabled = false;
         }
       };
@@ -85,14 +87,14 @@
 
     // Mostrar u ocultar el contenedor de subida de imagen
     function toggleFileContainer() {
-      const isDobleGrabadoSelected = dobleMarcadoOption.checked;      
-      fileContainer2.style.display = (isDobleGrabadoSelected) ? "block" : "none";
-      
+      const isDobleGrabadoSelected = dobleMarcadoOption.checked;
+      fileContainer2.style.display = isDobleGrabadoSelected ? 'block' : 'none';
+
       if (dobleMarcadoOption.checked) {
         validador.Img2 = false;
       } else if (sinMarcacionOption.checked || conMarcacionOption.checked) {
         validador.Img2 = true;
-        if(sonTodosVerdaderos(validador)){
+        if (sonTodosVerdaderos(validador)) {
           addToCartButton.disabled = false;
         }
       }
@@ -102,14 +104,15 @@
     toggleFileContainer();
 
     // Escucha cambios en las opciones de marcación
-    conMarcacionOption.addEventListener("change", toggleFileContainer);
-    sinMarcacionOption.addEventListener("change", toggleFileContainer);
-    dobleMarcadoOption.addEventListener("change", toggleFileContainer);
+    conMarcacionOption.addEventListener('change', toggleFileContainer);
+    sinMarcacionOption.addEventListener('change', toggleFileContainer);
+    dobleMarcadoOption.addEventListener('change', toggleFileContainer);
   });
 </script>
 
 <style>
-  #confirmButton2, #closeButton2 {
+  #confirmButton2,
+  #closeButton2 {
     background-color: #35392b;
     color: white;
     font-size: 14px;
@@ -124,7 +127,8 @@
     white-space: nowrap; /* Evita que el texto haga un salto de línea */
   }
 
-  #confirmButton2:hover, #closeButton2:hover {
+  #confirmButton2:hover,
+  #closeButton2:hover {
     background-color: #454d3a;
   }
 
@@ -141,24 +145,25 @@
   }
 
   .input-preview2 {
-      font-family: Assistant, sans-serif;
-      border-radius: 30px;
-      background-color: #35392b;
-      color: white;
-      font-size: 14px;
-      width: auto;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      transition: ease-in-out 750ms;
-      position: relative;
-      margin: .7rem .5rem .2rem 0;
-      white-space: nowrap;
+    font-family: Assistant, sans-serif;
+    border-radius: 30px;
+    background-color: #35392b;
+    color: white;
+    font-size: 14px;
+    line-height: 1;
+    width: auto;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: ease-in-out 750ms;
+    position: relative;
+    margin: 0.7rem 0.5rem 0.2rem 0;
+    white-space: nowrap;
   }
 
   .input-preview2:hover {
@@ -170,7 +175,7 @@
   }
 
   .input-preview2::after {
-    content: "";
+    content: '';
     text-align: center;
     font-size: 1em;
   }
@@ -183,7 +188,7 @@
     width: 100%;
     height: 100%;
     background: rgba(50, 50, 50, 0.2);
-    content: " ";
+    content: ' ';
     transition: ease-in-out 750ms;
   }
 
