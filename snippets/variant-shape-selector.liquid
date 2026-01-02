@@ -169,4 +169,26 @@
   .color-variant-group input[type="radio"]:checked + label[data-color-type="dorado"] {
     border-color: #000 !important;
   }
+
+  /* ========================== */
+  /* Standard Variant Buttons   */
+  /* ========================== */
+
+  /* Target variant-input-wrapper that is NOT shape or color group */
+  .variant-input-wrapper:not(.shape-variant-group):not(.color-variant-group) label {
+    border-color: #35392b !important;
+    color: #35392b !important;
+  }
+
+  /* Selected state for standard variant buttons */
+  .variant-input-wrapper:not(.shape-variant-group):not(.color-variant-group) input[type="radio"]:checked + label {
+    background-color: #35392b !important;
+    border-color: #35392b !important;
+    color: #fff !important;
+  }
+
+  /* Hover state for standard variant buttons */
+  .variant-input-wrapper:not(.shape-variant-group):not(.color-variant-group) label:hover {
+    border-color: #35392b !important;
+  }
 </style>

@@ -11,7 +11,9 @@
   >
     {% for option in product.options_with_values %}
       <fieldset class="js product-form__input product-form__input--pill">
-        <legend class="form__label">{{ option.name }}</legend>
+        <legend class="form__label">
+          {{ option.name }}{% if option.name == 'Color' %}: <span class="selected-color-value">{{ option.selected_value }}</span>{% endif %}
+        </legend>
         
         {% comment %} Determine wrapper class {% endcomment %}
         {% assign wrapper_class = 'variant-input-wrapper' %}
@@ -66,5 +68,21 @@
     </script>
   </variant-selects>
 {% endunless %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Update color label when color is selected
+    const colorInputs = document.querySelectorAll('.color-variant-group input[type="radio"]');
+    const colorLabel = document.querySelector('.selected-color-value');
+
+    if (colorInputs.length && colorLabel) {
+      colorInputs.forEach(function(input) {
+        input.addEventListener('change', function() {
+          colorLabel.textContent = this.value;
+        });
+      });
+    }
+  });
+</script>
 
 {% render 'variant-shape-selector' %}
