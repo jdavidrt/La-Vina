@@ -17,6 +17,8 @@
         {% assign wrapper_class = 'variant-input-wrapper' %}
         {% if option.name == 'Diseño de collar' %}
           {% assign wrapper_class = 'variant-input-wrapper shape-variant-group' %}
+        {% elsif option.name == 'Color' %}
+          {% assign wrapper_class = 'variant-input-wrapper color-variant-group' %}
         {% endif %}
         
         <div class="{{ wrapper_class }}">
@@ -28,6 +30,14 @@
             {% elsif value contains 'redondo' %}
               {% assign shape_type = 'circle' %}
             {% endif %}
+
+            {% comment %} Determine color type {% endcomment %}
+            {% assign color_type = '' %}
+            {% if value == 'Plateado' %}
+              {% assign color_type = 'plateado' %}
+            {% elsif value == 'Dorado' %}
+              {% assign color_type = 'dorado' %}
+            {% endif %}
             
             <input
               type="radio"
@@ -38,9 +48,10 @@
               {% if option.selected_value == value %}checked{% endif %}
               data-option-position="{{ option.position }}"
             >
-            <label 
+            <label
               for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
               {% if shape_type != '' %}data-shape-type="{{ shape_type }}"{% endif %}
+              {% if color_type != '' %}data-color-type="{{ color_type }}"{% endif %}
             >
               <span class="variant-label-text">{{ value }}</span>
             </label>
