@@ -56,12 +56,12 @@
         validador.DiezPalabras = false;
         errorMessage.style.display = wordCount > 9 ? "block" : "none";
         emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
-        console.log('[10-words] Validación FALLIDA. validador.DiezPalabras = false');
+        console.log(`[10-words] Validación FALLIDA. WordCount: ${wordCount}. validador.DiezPalabras = false`);
       } else {
         validador.DiezPalabras = true;
         errorMessage.style.display = "none";
         emptyMessage.style.display = "none";
-        console.log('[10-words] Validación EXITOSA. validador.DiezPalabras = true');
+        console.log(`[10-words] Validación EXITOSA. WordCount: ${wordCount}. validador.DiezPalabras = true`);
       }
       
       // Always use the central helper so we get a fresh button reference

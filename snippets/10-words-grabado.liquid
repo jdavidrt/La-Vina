@@ -89,10 +89,12 @@
         validador.DiezPalabras = false;
         errorMessage.style.display = wordCount > 9 ? "block" : "none";
         emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+        console.log(`[10-words-grabado] Validación FALLIDA. WordCount: ${wordCount}. DiezPalabras = false`);
       } else {
         validador.DiezPalabras = true;
         errorMessage.style.display = "none";
         emptyMessage.style.display = "none";
+        console.log(`[10-words-grabado] Validación EXITOSA. WordCount: ${wordCount}. DiezPalabras = true`);
       }
 
       // USAR SIEMPRE EL HELPER CENTRAL

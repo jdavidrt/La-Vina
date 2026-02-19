@@ -3,44 +3,47 @@
   document.addEventListener("DOMContentLoaded", function () {
     validador.DocePalabras = false;
 
-    function sonTodosVerdaderos(objeto) {
-      return Object.values(objeto).every(valor => valor === true);
-    }
-
     const inputField = document.querySelector("#nombre-input-2");
     const errorMessage = document.getElementById("error-message12");
     const emptyMessage = document.getElementById("empty-message12");
-    console.log('[12-words-nuestra-huella] errorMessage:', errorMessage, 'emptyMessage:', emptyMessage);
+    console.log('[12-words-nuestra-huella] Inicializando', {inputField, errorMessage, emptyMessage});
 
     // Muestra el mensaje "Por favor ingresa..." desde el inicio
-    emptyMessage.style.display = "flex";
+    if(emptyMessage) emptyMessage.style.display = "flex";
 
     function validarTexto() {
+      // Safety check
+      if(!inputField) return;
+
       const words = inputField.value.trim().split(/\s+/).filter(word => word.length > 0);
       const wordCount = words.length;
 
+      console.log(`[12-words-nuestra-huella] Validando: "${inputField.value}" | Palabras: ${wordCount}`);
+
       if (wordCount === 0 || wordCount > 11) {
         validador.DocePalabras = false;
-        errorMessage.style.display = wordCount > 0 ? "block" : "none";
+        if(errorMessage) errorMessage.style.display = wordCount > 11 ? "block" : "none";
+        console.log(`[12-words-nuestra-huella] FAIL. Words: ${wordCount}`);
       } else {
         validador.DocePalabras = true;
-        errorMessage.style.display = "none";
-        if (sonTodosVerdaderos(validador)) {
-          if (typeof addToCartButton !== 'undefined') {
-            addToCartButton.disabled = false;
-          }
-        }
+        if(errorMessage) errorMessage.style.display = "none";
+        console.log(`[12-words-nuestra-huella] PASS. Words: ${wordCount}`);
       }
+      
+      if (window.checkAndUpdateButton) window.checkAndUpdateButton();
 
-      // ✅ Oculta el mensaje de "Por favor ingresa..." cuando hay al menos una palabra
-      emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+      // Oculta el mensaje de "Por favor ingresa..." cuando hay al menos una palabra
+      if(emptyMessage) emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
     }
 
-    // Validación en tiempo real
-    inputField.addEventListener("input", validarTexto);
-
-    // Validación inicial por si el campo ya tiene valor al cargar
-    validarTexto();
+    if(inputField) {
+        // Validación en tiempo real
+        inputField.addEventListener("input", validarTexto);
+        // Validación inicial por si el campo ya tiene valor al cargar
+        validarTexto();
+    } else {
+        console.warn('[12-words-nuestra-huella] Input field #nombre-input-2 not found. Validator might fail.');
+    }
   });
 </script>
 

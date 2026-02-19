@@ -10,15 +10,31 @@
     // Global helper — always freshly queries the button and enables/disables
     // based on current validador state. All snippets should call this instead
     // of directly manipulating addToCartButton.
+    // Global helper — always freshly queries the button and enables/disables
+    // based on current validador state. All snippets should call this instead
+    // of directly manipulating addToCartButton.
     window.checkAndUpdateButton = function() {
-      const btn = document.querySelector('[name="add"]');
-      if (!btn) return;
-      if (sonTodosVerdaderos(validador)) {
-        btn.disabled = false;
-        console.log('[validador] ✅ Button ENABLED — all validations passed');
-      } else {
-        btn.disabled = true;
+      const buttons = document.querySelectorAll('[name="add"]');
+      if (!buttons || buttons.length === 0) {
+          console.warn('[validador] No buttons found with [name="add"]!');
+          return;
       }
+      
+      const isValid = sonTodosVerdaderos(validador);
+      console.log('[validador] Checking button state. Validator:', JSON.stringify(validador), '| Is Valid:', isValid);
+
+      buttons.forEach(btn => {
+          if (isValid) {
+            btn.disabled = false;
+            btn.classList.remove('disabled'); // Ensure class is removed if used by theme
+            // Also try to enable dynamic checkout buttons if possible, though they are usually separate
+            console.log('[validador] ✅ Button ENABLED');
+          } else {
+            btn.disabled = true;
+            btn.classList.add('disabled'); // Ensure visual indication
+            console.log('[validador] ❌ Button DISABLED');
+          }
+      });
     };
 
     // Disable button immediately if it is already in the DOM (before DOMContentLoaded).

@@ -1,88 +1,94 @@
 {%- assign product_form_id = 'product-form-' | append: section.id -%}
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    validador.CincoPalabras = false;
-  })
-    function sonTodosVerdaderos(objeto) {
-    return Object.values(objeto).every(valor => valor === true);
-  }
-</script>
-<div class="field-container" style="display: block;">
-  <div class="field">
-    <input
-      form="{{ product_form_id }}"
-      id="nombre-input-2"
-      class="field__input"
-      type="text"
-      name="properties[Tu frase personalizada]"
-    >
-    <label class="field__label" for="nombre-input-2">Escribe tu frase personalizada: (máximo 4 palabras)</label>
-  </div>
-  <p id="error-message" class="error-message">Solo se permiten hasta 4 palabras</p>
-  <p id="empty-message" class="empty-message">
-    Por favor ingresa la frase personalizada <span class="question-mark">!</span>
-  </p>
-</div>
-<script>
   document.addEventListener("DOMContentLoaded", function () {
+    validador.CincoPalabras = false;
+
     const inputField = document.getElementById("nombre-input-2");
     const errorMessage = document.getElementById("error-message");
     const emptyMessage = document.getElementById("empty-message");
-    const conMarcacionOption = document.getElementById("template--16519202373701__main-2-0"); // ID de "Con marcación"
-    const sinMarcacionOption = document.getElementById("template--16519202373701__main-2-1"); // ID de "Sin marcación"
+
+    // Robust selector logic for radio buttons
+    let conMarcacionOption = null;
+    let sinMarcacionOption = null;
+
+    const allRadios = document.querySelectorAll('input[type="radio"]');
+    allRadios.forEach(radio => {
+        const val = radio.value.toLowerCase();
+        if (val.includes('con marcación') || val.includes('con marcacion')) conMarcacionOption = radio;
+        if (val.includes('sin marcación') || val.includes('sin marcacion')) sinMarcacionOption = radio;
+    });
+
+    // Fallback to IDs if not found by value
+    if (!conMarcacionOption || !sinMarcacionOption) {
+      conMarcacionOption = conMarcacionOption || document.getElementById("template--16519202373701__main-2-0");
+      sinMarcacionOption = sinMarcacionOption || document.getElementById("template--16519202373701__main-2-1");
+    }
+
+    console.log('[5-words] Options found:', {conMarcacionOption, sinMarcacionOption});
 
     // Función para mostrar/ocultar el campo de texto personalizado
     function toggleCustomTextField() {
-      const isConMarcacionSelected = conMarcacionOption.checked;
-      document.querySelector('.field-container').style.display = isConMarcacionSelected ? 'flex' : 'none';
+      // Safety check
+      if(!conMarcacionOption || !sinMarcacionOption) return;
+
+      const container = document.querySelector('.field-container');
+
       if (conMarcacionOption.checked) {
+        if(container) container.style.display = 'flex';
         validador.CincoPalabras = false;
         validarTexto();
       }else if (sinMarcacionOption.checked) {
-        validador.CincoPalabras = true; // Actualiza validador a true si "Sin marcación" está seleccionada
-        if(sonTodosVerdaderos(validador)){
-            addToCartButton.disabled = false;
-         }
+        if(container) container.style.display = 'none';
+        validador.CincoPalabras = true; 
+        if(errorMessage) errorMessage.style.display = "none";
+        
+        if(window.checkAndUpdateButton) window.checkAndUpdateButton();
       }
     }
 
-    // Inicializa el campo según la opción predeterminada (Sin Marcación)
+    // Inicializa el campo según la opción predeterminada
     toggleCustomTextField();
 
     // Escucha los cambios de selección en las opciones de marcación
-    conMarcacionOption.addEventListener("change", toggleCustomTextField);
-    sinMarcacionOption.addEventListener("change", toggleCustomTextField);
+    if(conMarcacionOption) conMarcacionOption.addEventListener("change", toggleCustomTextField);
+    if(sinMarcacionOption) sinMarcacionOption.addEventListener("change", toggleCustomTextField);
 
     // Muestra el mensaje de "Por favor ingresa la frase personalizada" desde el inicio
-    emptyMessage.style.display = "flex";
+    if(emptyMessage) emptyMessage.style.display = "flex";
 
     // Función para validar el campo de texto
     function validarTexto() {
-      const words = inputField.value.split(/\s+/).filter(word => word.length > 0);
+      // Safety check
+      if(!inputField) return;
+
+      const words = inputField.value.trim().split(/\s+/).filter(word => word.length > 0);
       const wordCount = words.length;
+      
+      console.log(`[5-words] Validando: "${inputField.value}" | Palabras: ${wordCount}`);
 
       // Verifica si el campo está vacío o no cumple las condiciones
       if (wordCount === 0 || wordCount > 5) {
          validador.CincoPalabras = false;
-        errorMessage.style.display = wordCount > 0 ? "block" : "none"; // Muestra u oculta error
+         if(errorMessage) errorMessage.style.display = wordCount > 0 ? "block" : "none";
+         console.log(`[5-words] FAIL. Words: ${wordCount}`);
       } else {
         validador.CincoPalabras = true;
-        errorMessage.style.display = "none"; // Oculta mensaje de error
-        if(sonTodosVerdaderos(validador)){
-            addToCartButton.disabled = false;
-         }
+        if(errorMessage) errorMessage.style.display = "none";
+        console.log(`[5-words] PASS. Words: ${wordCount}`);
       }
+      
+      if(window.checkAndUpdateButton) window.checkAndUpdateButton();
 
       // Muestra el mensaje "Por favor ingresa la frase personalizada" si está vacío
-      emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+      if(emptyMessage) emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
     }
 
     // Escucha el evento input y valida el texto cada vez que cambia
-    inputField.addEventListener("input", function () {
-
-      // Valida el texto y actualiza los mensajes
-      validarTexto();
-    });
+    if(inputField) {
+        inputField.addEventListener("input", function () {
+          validarTexto();
+        });
+    }
   });
 </script>
 <style>

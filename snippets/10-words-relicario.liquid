@@ -70,9 +70,11 @@
       if (wordCount === 0 || wordCount > 9) { // Corregido a > 9 para ser consistente con "máximo 9 palabras" label
          validador.DiezPalabras = false;
         errorMessage.style.display = wordCount > 9 ? "block" : "none"; // Muestra u oculta error
+        console.log(`[10-words-relicario] Validación FALLIDA. WordCount: ${wordCount}. DiezPalabras = false`);
       } else {
         validador.DiezPalabras = true;
         errorMessage.style.display = "none"; // Oculta mensaje de error
+        console.log(`[10-words-relicario] Validación EXITOSA. WordCount: ${wordCount}. DiezPalabras = true`);
       }
       
       // Muestra el mensaje "Por favor ingresa la frase personalizada" si está vacío

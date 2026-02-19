@@ -2,35 +2,13 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     validador.DocePalabras = false;
-  })
-  function sonTodosVerdaderos(objeto) {
-    return Object.values(objeto).every(valor => valor === true);
-  }
-</script>
-<div class="field-container" style="display: none;">
-  <div class="field">
-    <input
-      form="{{ product_form_id }}"
-      id="input-12palabras"
-      class="field__input"
-      type="text"
-      name="properties[Tu frase personalizada]"
-    >
-    <label class="field__label" for="input-12palabras">Escribe tu frase personalizada: (máximo 11 palabras)</label>
-  </div>
-  <p id="error-message-12" class="error-message">Solo se permiten hasta 11 palabras</p>
-  <p id="empty-message-12" class="empty-message">
-    Por favor ingresa la frase personalizada <span class="question-mark">!</span>
-  </p>
-</div>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
+    
     const inputField = document.querySelector("#input-12palabras");
     const errorMessage = document.getElementById("error-message-12");
     const emptyMessage = document.getElementById("empty-message-12");
     const fieldContainer = document.querySelector('.field-container');
 
-    // Buscar opciones de "Grabado de frase" por el texto del label
+    // Buscar opciones de "Grabado de frase" por el texto del label (Robusto)
     let conFraseOption = null;
     let sinFraseOption = null;
 
@@ -54,46 +32,55 @@
       sinFraseOption = sinFraseOption || document.getElementById("template--16579220963397__main-1-0");
     }
 
+    console.log('[12-words-grabado] Options found:', {conFraseOption, sinFraseOption});
+
     // Verificar que se encontraron las opciones
     if (!conFraseOption || !sinFraseOption) {
       console.error("No se pudieron encontrar las opciones de 'Grabado de frase'. Verificar IDs o nombres de opciones.");
-      validador.DocePalabras = true;
+      validador.DocePalabras = true; // Fallback
+      if (window.checkAndUpdateButton) window.checkAndUpdateButton();
       return;
     }
 
     // Función para validar el campo de texto
     function validarTexto() {
-      const words = inputField.value.split(/\s+/).filter(word => word.length > 0);
+      // Safety check
+      if(!inputField) return;
+
+      const words = inputField.value.trim().split(/\s+/).filter(word => word.length > 0);
       const wordCount = words.length;
+      
+      console.log(`[12-words-grabado] Validando: "${inputField.value}" | Palabras: ${wordCount}`);
 
       if (wordCount === 0 || wordCount > 11) {
         validador.DocePalabras = false;
-        errorMessage.style.display = wordCount > 11 ? "block" : "none";
+        if(errorMessage) errorMessage.style.display = wordCount > 11 ? "block" : "none";
+        console.log(`[12-words-grabado] FAIL. Words: ${wordCount}`);
       } else {
         validador.DocePalabras = true;
-        errorMessage.style.display = "none";
-        if (sonTodosVerdaderos(validador)) {
-          addToCartButton.disabled = false;
-        }
+        if(errorMessage) errorMessage.style.display = "none";
+        console.log(`[12-words-grabado] PASS. Words: ${wordCount}`);
       }
-      emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+      
+      if(emptyMessage) emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+
+      if (window.checkAndUpdateButton) window.checkAndUpdateButton();
     }
 
     // Función para mostrar/ocultar el campo de texto según la opción seleccionada
     function toggleCustomTextField() {
       if (conFraseOption.checked) {
-        fieldContainer.style.display = 'flex';
+        if(fieldContainer) fieldContainer.style.display = 'flex';
         validador.DocePalabras = false;
         validarTexto();
       } else if (sinFraseOption.checked) {
-        fieldContainer.style.display = 'none';
+        if(fieldContainer) fieldContainer.style.display = 'none';
         validador.DocePalabras = true;
-        inputField.value = '';
-        errorMessage.style.display = 'none';
-        emptyMessage.style.display = 'none';
-        if (sonTodosVerdaderos(validador)) {
-          addToCartButton.disabled = false;
-        }
+        if(inputField) inputField.value = ''; // Limpiar input si se oculta
+        if(errorMessage) errorMessage.style.display = 'none';
+        if(emptyMessage) emptyMessage.style.display = 'none';
+        
+        if (window.checkAndUpdateButton) window.checkAndUpdateButton();
       }
     }
 
@@ -105,7 +92,7 @@
     sinFraseOption.addEventListener("change", toggleCustomTextField);
 
     // Validar texto cada vez que el usuario escribe
-    inputField.addEventListener("input", validarTexto);
+    if(inputField) inputField.addEventListener("input", validarTexto);
   });
 </script>
 <style>
