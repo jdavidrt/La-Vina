@@ -64,11 +64,13 @@
         filePreview2.classList.add('has-image');
         validador.Img2 = true;
 
-        if (sonTodosVerdaderos(validador)) {
-          addToCartButton.disabled = false;
+        if (window.checkAndUpdateButton) {
+          window.checkAndUpdateButton();
         }
       };
-      reader2.readAsDataURL(this.files[0]);
+      if (this.files && this.files[0]) {
+        reader2.readAsDataURL(this.files[0]);
+      }
     };
   });
 </script>

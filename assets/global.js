@@ -1243,7 +1243,20 @@ class VariantSelects extends HTMLElement {
             addButton.setAttribute('disabled', 'disabled');
             if (text) addButtonText.textContent = text;
         } else {
-            addButton.removeAttribute('disabled');
+            // FIX: Respect the custom validador system before enabling
+            if (typeof validador !== 'undefined' && Object.keys(validador).length > 0) {
+                const allValid = Object.values(validador).every(v => v === true);
+                console.log('[toggleAddButton] validador check:', JSON.stringify(validador), '| allValid:', allValid);
+                if (allValid) {
+                    addButton.removeAttribute('disabled');
+                } else {
+                    addButton.setAttribute('disabled', 'disabled');
+                    console.log('[toggleAddButton] Button kept DISABLED — not all validador keys are true');
+                }
+            } else {
+                // No validador system on this product — enable normally
+                addButton.removeAttribute('disabled');
+            }
             addButtonText.textContent = window.variantStrings.addToCart;
         }
 
@@ -1364,8 +1377,8 @@ window.initDirectImageUploader = function (config) {
             validator[validatorKey] = true;
 
             // Enable add to cart if all validations pass
-            if (Object.values(validator).every(v => v === true)) {
-                addToCartButton.disabled = false;
+            if (window.checkAndUpdateButton) {
+                window.checkAndUpdateButton();
             }
         };
         reader.readAsDataURL(this.files[0]);

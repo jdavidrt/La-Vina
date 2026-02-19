@@ -4,10 +4,6 @@
     // Inicializar validador para la imagen
     validador.Img1 = false;
   });
-
-  function sonTodosVerdaderos(objeto) {
-    return Object.values(objeto).every(valor => valor === true);
-  }
 </script>
 <div class="file_container">
   <p class="line-item-property__field">
@@ -49,26 +45,34 @@
     const filePreview = document.querySelector('.input-preview');
 
     // Direct file picker on button click
-    openModalButton.onclick = function() {
-      fileImage.click();
-    };
+    if(openModalButton) {
+        openModalButton.onclick = function() {
+            fileImage.click();
+        };
+    }
 
     // Preview image on file selection
-    fileImage.onchange = function() {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        filePreview.style.height = "170px";
-        filePreview.style.backgroundImage = "url(" + e.target.result + ")";
-        filePreview.classList.add("has-image");
-        validador.Img1 = true;
-        console.log('Imagen cargada correctamente. Validador actualizado:', validador);
-        
-        if(sonTodosVerdaderos(validador)){
-          addToCartButton.disabled = false;
-        }
-      };
-      reader.readAsDataURL(this.files[0]);
-    };
+    if(fileImage) {
+        fileImage.onchange = function() {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                filePreview.style.height = "170px";
+                filePreview.style.backgroundImage = "url(" + e.target.result + ")";
+                filePreview.classList.add("has-image");
+                validador.Img1 = true;
+                console.log('Imagen cargada correctamente. Validador actualizado:', validador);
+                
+                if (window.checkAndUpdateButton) {
+                    window.checkAndUpdateButton();
+                } else {
+                    console.warn('window.checkAndUpdateButton not defined');
+                }
+            };
+            if (this.files && this.files[0]) {
+                reader.readAsDataURL(this.files[0]);
+            }
+        };
+    }
   });
 </script>
 

@@ -1,11 +1,9 @@
 {%- assign product_form_id = 'product-form-' | append: section.id -%}
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+    console.log('[10-words-fuente] Inicializando validador.DiezPalabras = false');
     validador.DiezPalabras = false;
   })
-   function sonTodosVerdaderos(objeto) {
-    return Object.values(objeto).every(valor => valor === true);
-  }
 </script>
 <div class="field-container" style="display: block;">
   <div class="field">
@@ -29,36 +27,35 @@
     const errorMessage = document.getElementById("error-message");
     const emptyMessage = document.getElementById("empty-message");
 
-        // Función para validar el campo de texto
+    // Función para validar el campo de texto
     function validarTexto() {
-      const words = inputField.value.split(/\s+/).filter(word => word.length > 0);
+      const valor = inputField.value;
+      const words = valor.trim().split(/\s+/).filter(word => word.length > 0);
       const wordCount = words.length;
 
+      console.log(`[10-words-fuente] Validando: "${valor}" | Palabras: ${wordCount}`);
+
       // Verifica si el campo está vacío o no cumple las condiciones
-      if (wordCount === 0 || wordCount > 10) {
+      if (wordCount === 0 || wordCount > 9) { // Corregido a > 9
          validador.DiezPalabras = false;
-        errorMessage.style.display = wordCount > 0 ? "block" : "none"; // Muestra u oculta error
+        errorMessage.style.display = wordCount > 9 ? "block" : "none"; // Muestra u oculta error
       } else {
         validador.DiezPalabras = true;
         errorMessage.style.display = "none"; // Oculta mensaje de error
-        if(sonTodosVerdaderos(validador)){
-            addToCartButton.disabled = false;
-         }
       }
+      
       // Muestra el mensaje "Por favor ingresa la frase personalizada" si está vacío
       emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+
+      if (window.checkAndUpdateButton) window.checkAndUpdateButton();
     }
+    
     // Muestra el mensaje de "Por favor ingresa la frase personalizada" desde el inicio
+    // Asumimos que este snippet SIEMPRE requiere validación si se carga (parece que no tiene toggle con radio buttons)
     emptyMessage.style.display = "flex";
 
-
-
     // Escucha el evento input y valida el texto cada vez que cambia
-    inputField.addEventListener("input", function () {
-
-      // Valida el texto y actualiza los mensajes
-      validarTexto();
-    });
+    inputField.addEventListener("input", validarTexto);
   });
 </script>
 <style>

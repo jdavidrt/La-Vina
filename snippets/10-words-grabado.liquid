@@ -1,11 +1,9 @@
 {%- assign product_form_id = 'product-form-' | append: section.id -%}
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+    console.log('[10-words-grabado] Inicializando validador.DiezPalabras = false');
     validador.DiezPalabras = false;
   })
-  function sonTodosVerdaderos(objeto) {
-    return Object.values(objeto).every(valor => valor === true);
-  }
 </script>
 <div class="field-container" style="display: none;">
   <div class="field">
@@ -39,72 +37,89 @@
     const allRadios = document.querySelectorAll('input[type="radio"]');
 
     allRadios.forEach(radio => {
-      const label = document.querySelector(`label[for="${radio.id}"]`);
+      // Intenta encontrar label por atributo 'for'
+      let label = document.querySelector(`label[for="${radio.id}"]`);
+      
+      // Si no encuentra por 'for', busca si el input está DENTRO del label (común en algunos temas)
+      if (!label) {
+          label = radio.closest('label');
+      }
+
       if (label) {
         const labelText = label.textContent.trim().toLowerCase();
-        if (labelText.includes('con frase')) {
+        // Ajustamos la búsqueda para ser más flexibles
+        if (labelText.includes('con frase') || radio.value.toLowerCase().includes('con frase') || radio.value.toLowerCase().includes('con marcación')) {
           conFraseOption = radio;
-        } else if (labelText.includes('sin frase')) {
+        } else if (labelText.includes('sin frase') || radio.value.toLowerCase().includes('sin frase') || radio.value.toLowerCase().includes('sin marcación')) {
           sinFraseOption = radio;
         }
+      } else {
+         // Fallback: comprobar valor del input directamente
+         const val = radio.value.toLowerCase();
+         if (val.includes('con frase') || val.includes('con marcación')) conFraseOption = radio;
+         if (val.includes('sin frase') || val.includes('sin marcación')) sinFraseOption = radio;
       }
     });
 
-    // Si no encontró por label, intentar con los IDs conocidos
+    // Validar si encontró las opciones
     if (!conFraseOption || !sinFraseOption) {
-      // Intentar IDs con posición 3
-      conFraseOption = conFraseOption || document.getElementById("template--16577217953861__main-3-1");
-      sinFraseOption = sinFraseOption || document.getElementById("template--16577217953861__main-3-0");
-
-      // Intentar IDs con posición 1
-      if (!conFraseOption || !sinFraseOption) {
-        conFraseOption = conFraseOption || document.getElementById("template--16577217953861__main-1-1");
-        sinFraseOption = sinFraseOption || document.getElementById("template--16577217953861__main-1-0");
-      }
+      console.warn("[10-words-grabado] No se pudieron encontrar las opciones de 'Grabado de frase' automáticamente. Intentando selectores por valor explícito.");
+      conFraseOption = document.querySelector('input[type="radio"][value*="Con Fraser"], input[type="radio"][value*="Con Marcación"]');
+      sinFraseOption = document.querySelector('input[type="radio"][value*="Sin Frase"], input[type="radio"][value*="Sin Marcación"]');
     }
 
-    // Verificar que se encontraron las opciones
     if (!conFraseOption || !sinFraseOption) {
-      console.error("No se pudieron encontrar las opciones de 'Grabado de frase'. Verificar IDs o nombres de opciones.");
-      // Fallback: habilitar validación para no bloquear el carrito
-      validador.DiezPalabras = true;
-      return;
+        console.error("[10-words-grabado] ERROR CRÍTICO: No se encontraron los radio buttons. La validación se deshabilitará para no bloquear la compra.");
+        validador.DiezPalabras = true;
+        if (window.checkAndUpdateButton) window.checkAndUpdateButton();
+        return;
     }
+
+    console.log('[10-words-grabado] Opciones encontradas:', { conFraseOption, sinFraseOption });
 
     // Función para validar el campo de texto
     function validarTexto() {
-      const words = inputField.value.split(/\s+/).filter(word => word.length > 0);
+      const valor = inputField.value;
+      const words = valor.trim().split(/\s+/).filter(word => word.length > 0);
       const wordCount = words.length;
+
+      console.log(`[10-words-grabado] Validando: "${valor}" | Palabras: ${wordCount}`);
 
       if (wordCount === 0 || wordCount > 9) {
         validador.DiezPalabras = false;
         errorMessage.style.display = wordCount > 9 ? "block" : "none";
+        emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
       } else {
         validador.DiezPalabras = true;
         errorMessage.style.display = "none";
-        if (sonTodosVerdaderos(validador)) {
-          addToCartButton.disabled = false;
-        }
+        emptyMessage.style.display = "none";
       }
-      emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+
+      // USAR SIEMPRE EL HELPER CENTRAL
+      if (window.checkAndUpdateButton) {
+          window.checkAndUpdateButton();
+      }
     }
 
     // Función para mostrar/ocultar el campo de texto según la opción seleccionada
     function toggleCustomTextField() {
       if (conFraseOption.checked) {
+        console.log('[10-words-grabado] Opción CON frase seleccionada');
         // "Con frase" seleccionado: mostrar campo y requerir validación
         fieldContainer.style.display = 'flex';
         validador.DiezPalabras = false;
         validarTexto();
       } else if (sinFraseOption.checked) {
+        console.log('[10-words-grabado] Opción SIN frase seleccionada');
         // "Sin frase" seleccionado: ocultar campo y aprobar validación
         fieldContainer.style.display = 'none';
         validador.DiezPalabras = true;
         inputField.value = ''; // Limpiar el campo
         errorMessage.style.display = 'none';
         emptyMessage.style.display = 'none';
-        if (sonTodosVerdaderos(validador)) {
-          addToCartButton.disabled = false;
+        
+        if (window.checkAndUpdateButton) {
+            window.checkAndUpdateButton();
         }
       }
     }
