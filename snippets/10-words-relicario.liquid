@@ -2,12 +2,10 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     validador.DiezPalabras = false;
-  })
-  function sonTodosVerdaderos(objeto) {
-    return Object.values(objeto).every(valor => valor === true);
-  }
+  });
 </script>
-<div class="field-container" style="display: block;">
+
+<div class="field-container" style="display: none;">
   <div class="field">
     <input
       form="{{ product_form_id }}"
@@ -18,105 +16,101 @@
     >
     <label class="field__label" for="input-10palabras">Escribe tu frase personalizada: (máximo 9 palabras)</label>
   </div>
-  <p id="error-message" class="error-message">Solo se permiten hasta 9 palabras</p>
-  <p id="empty-message" class="empty-message">
+  <p id="error-message" class="error-message" style="display: none;">Solo se permiten hasta 9 palabras</p>
+  <p id="empty-message" class="empty-message" style="display: none;">
     Por favor ingresa la frase personalizada <span class="question-mark">!</span>
   </p>
 </div>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     console.log('[10-words-relicario] Inicializando validador.DiezPalabras = false');
     validador.DiezPalabras = false;
 
-    const inputField = document.querySelector("#input-10palabras")
+    const inputField = document.querySelector("#input-10palabras");
     const errorMessage = document.getElementById("error-message");
     const emptyMessage = document.getElementById("empty-message");
-    
-    // Búsqueda dinámica de opciones "Con marcación" y "Sin marcación"
-    let conMarcacionOption = null;
-    let sinMarcacionOption = null;
+    const fieldContainer = document.querySelector('.field-container');
 
-    const allRadios = document.querySelectorAll('input[type="radio"]');
-    allRadios.forEach(radio => {
-        const val = radio.value.toLowerCase();
-        if (val.includes('con marcación') || val.includes('con marcacion')) conMarcacionOption = radio;
-        if (val.includes('sin marcación') || val.includes('sin marcacion')) sinMarcacionOption = radio;
+    // Buscar opciones de grabado de frase por texto del label (robusto, case-insensitive)
+    let conFraseOption = null;
+    let sinFraseOption = null;
+
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      let label = document.querySelector(`label[for="${radio.id}"]`);
+      if (!label) label = radio.closest('label');
+      const textToCheck = (label ? label.textContent : radio.value).trim().toLowerCase();
+      if (textToCheck.includes('con frase') || textToCheck.includes('con marcacion') || textToCheck.includes('con marcación')) {
+        conFraseOption = radio;
+      } else if (textToCheck.includes('sin frase') || textToCheck.includes('sin marcacion') || textToCheck.includes('sin marcación')) {
+        sinFraseOption = radio;
+      }
     });
 
-    if (!conMarcacionOption || !sinMarcacionOption) {
-        console.warn("[10-words-relicario] Fallback: buscando por IDs conocidos para opciones de marcación.");
-        conMarcacionOption = document.getElementById("template--16560574136389__main-1-1");
-        sinMarcacionOption = document.getElementById("template--16560574136389__main-1-0");
+    if (!conFraseOption || !sinFraseOption) {
+      console.warn("[10-words-relicario] Fallback: buscando por IDs conocidos.");
+      conFraseOption = conFraseOption || document.getElementById("template--16560574136389__main-1-1");
+      sinFraseOption = sinFraseOption || document.getElementById("template--16560574136389__main-1-0");
     }
 
-    if (!conMarcacionOption || !sinMarcacionOption) {
-        console.error("[10-words-relicario] ERROR: No se encontraron las opciones de marcación.");
-        // Evitar bloqueo
-        validador.DiezPalabras = true; 
-        if (window.checkAndUpdateButton) window.checkAndUpdateButton();
-        return;
+    if (!conFraseOption || !sinFraseOption) {
+      console.error("[10-words-relicario] ERROR: No se encontraron las opciones de marcación. Aprobando validación para no bloquear compra.");
+      validador.DiezPalabras = true;
+      if (window.checkAndUpdateButton) window.checkAndUpdateButton();
+      return;
     }
-    
-    console.log('[10-words-relicario] Opciones encontradas:', { conMarcacionOption, sinMarcacionOption });
 
-        // Función para validar el campo de texto
+    console.log('[10-words-relicario] Opciones encontradas:', { conFraseOption, sinFraseOption });
+
     function validarTexto() {
-      const words = inputField.value.trim().split(/\s+/).filter(word => word.length > 0);
+      if (!inputField) return;
+      const words = inputField.value.trim().split(/\s+/).filter(w => w.length > 0);
       const wordCount = words.length;
 
       console.log(`[10-words-relicario] Validando: "${inputField.value}" | Palabras: ${wordCount}`);
 
-      // Verifica si el campo está vacío o no cumple las condiciones
-      if (wordCount === 0 || wordCount > 9) { // Corregido a > 9 para ser consistente con "máximo 9 palabras" label
-         validador.DiezPalabras = false;
-        errorMessage.style.display = wordCount > 9 ? "block" : "none"; // Muestra u oculta error
+      if (wordCount === 0 || wordCount > 9) {
+        validador.DiezPalabras = false;
+        if (errorMessage) errorMessage.style.display = wordCount > 9 ? "block" : "none";
+        if (emptyMessage) emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
         console.log(`[10-words-relicario] Validación FALLIDA. WordCount: ${wordCount}. DiezPalabras = false`);
       } else {
         validador.DiezPalabras = true;
-        errorMessage.style.display = "none"; // Oculta mensaje de error
+        if (errorMessage) errorMessage.style.display = "none";
+        if (emptyMessage) emptyMessage.style.display = "none";
         console.log(`[10-words-relicario] Validación EXITOSA. WordCount: ${wordCount}. DiezPalabras = true`);
       }
-      
-      // Muestra el mensaje "Por favor ingresa la frase personalizada" si está vacío
-      emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
 
       if (window.checkAndUpdateButton) window.checkAndUpdateButton();
     }
 
-    // Función para mostrar/ocultar el campo de texto personalizado
     function toggleCustomTextField() {
-      const isConMarcacionSelected = conMarcacionOption.checked;
-      const container = document.querySelector('.field-container');
-      
-      if (container) container.style.display = isConMarcacionSelected ? 'block' : 'none'; // Changed flex to block to match other snippets structure if needed
-
-      if (conMarcacionOption.checked) {
+      if (conFraseOption.checked) {
         console.log('[10-words-relicario] Con Marcación seleccionada');
+        if (fieldContainer) fieldContainer.style.display = 'flex';
         validador.DiezPalabras = false;
         validarTexto();
-      } else if (sinMarcacionOption.checked) {
+      } else if (sinFraseOption.checked) {
         console.log('[10-words-relicario] Sin Marcación seleccionada');
-        validador.DiezPalabras = true; // Actualiza validador a true si "Sin marcación" está seleccionada
-        errorMessage.style.display = "none";
-        emptyMessage.style.display = "none";
+        if (fieldContainer) fieldContainer.style.display = 'none';
+        validador.DiezPalabras = true;
+        if (inputField) inputField.value = '';
+        if (errorMessage) errorMessage.style.display = 'none';
+        if (emptyMessage) emptyMessage.style.display = 'none';
+
         if (window.checkAndUpdateButton) window.checkAndUpdateButton();
       }
     }
 
-    // Inicializa el campo según la opción predeterminada (Sin Marcación)
     toggleCustomTextField();
 
-    // Escucha los cambios de selección en las opciones de marcación
-    conMarcacionOption.addEventListener("change", toggleCustomTextField);
-    sinMarcacionOption.addEventListener("change", toggleCustomTextField);
+    conFraseOption.addEventListener("change", toggleCustomTextField);
+    sinFraseOption.addEventListener("change", toggleCustomTextField);
 
-    // Muestra el mensaje de "Por favor ingresa la frase personalizada" desde el inicio
-    // emptyMessage.style.display = "flex"; // Comentado pq toggleCustomTextField ya maneja esto, y si está oculto no debe mostrarse
-
-    // Escucha el evento input y valida el texto cada vez que cambia
-    inputField.addEventListener("input", validarTexto);
+    if (inputField) inputField.addEventListener("input", validarTexto);
   });
 </script>
+
 <style>
   .field-container {
     display: flex;

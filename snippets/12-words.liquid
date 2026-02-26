@@ -3,105 +3,9 @@
   document.addEventListener("DOMContentLoaded", function() {
     validador.DocePalabras = false;
   });
-  function sonTodosVerdaderos(objeto) {
-    return Object.values(objeto).every(valor => valor === true);
-  }
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const inputField = document.querySelector("#nombre-input-2")
-    const errorMessage = document.getElementById("error-message");
-    const emptyMessage = document.getElementById("empty-message");
-    
-    // Búsqueda dinámica de opciones
-    let conMarcacionOption = null;
-    let sinMarcacionOption = null;
-
-    const allRadios = document.querySelectorAll('input[type="radio"]');
-    allRadios.forEach(radio => {
-        const val = radio.value.toLowerCase();
-        // Labels for 12-words might be slightly different, check general "Con" / "Sin" patterns
-        if (val.includes('con marcación') || val.includes('con marcacion') || val.includes('con frase')) conMarcacionOption = radio;
-        if (val.includes('sin marcación') || val.includes('sin marcacion') || val.includes('sin frase')) sinMarcacionOption = radio;
-    });
-
-    // Fallback to IDs if dynamic search failed
-    if (!conMarcacionOption || !sinMarcacionOption) {
-        console.warn("[12-words] Fallback to IDs");
-        conMarcacionOption = document.getElementById("template--16560519938117__main-2-1"); 
-        sinMarcacionOption = document.getElementById("template--16560519938117__main-2-0");
-    }
-
-    if (!conMarcacionOption || !sinMarcacionOption) {
-        console.error("[12-words] Options not found!");
-        validador.DocePalabras = true; // Fallback to allow cart
-        if (window.checkAndUpdateButton) window.checkAndUpdateButton();
-        return;
-    }
-
-    console.log('[12-words] Options found:', {conMarcacionOption, sinMarcacionOption});
-
-    // Función para mostrar/ocultar el campo de texto personalizado
-    function toggleCustomTextField() {
-      const container = document.querySelector('.field-container');
-      
-      if (conMarcacionOption.checked) {
-        if(container) container.style.display = 'flex';
-        validador.DocePalabras = false;
-        validarTexto();
-      } else if (sinMarcacionOption.checked) {
-        if(container) container.style.display = 'none';
-        validador.DocePalabras = true; 
-        errorMessage.style.display = "none";
-        emptyMessage.style.display = "none";
-        
-        if (window.checkAndUpdateButton) window.checkAndUpdateButton();
-      }
-    }
-
-    // Inicializa el campo según la opción predeterminada
-    toggleCustomTextField();
-
-    // Escucha los cambios de selección en las opciones de marcación
-    conMarcacionOption.addEventListener("change", toggleCustomTextField);
-    sinMarcacionOption.addEventListener("change", toggleCustomTextField);
-
-    // Muestra el mensaje de "Por favor ingresa la frase personalizada" desde el inicio
-    // emptyMessage.style.display = "flex"; // Let toggle handle this
-
-    // Función para validar el campo de texto
-    function validarTexto() {
-      const words = inputField.value.trim().split(/\s+/).filter(word => word.length > 0);
-      const wordCount = words.length;
-      
-      console.log(`[12-words] Validando: "${inputField.value}" | Palabras: ${wordCount}`);
-
-      // Verifica si el campo está vacío o no cumple las condiciones
-      if (wordCount === 0 || wordCount > 12) {
-        validador.DocePalabras = false; 
-        errorMessage.style.display = wordCount > 12 ? "block" : "none"; // Show error only if exceeded
-        emptyMessage.style.display = wordCount === 0 ? "flex" : "none"; // Show empty msg if empty
-        console.log(`[12-words] FAIL. Words: ${wordCount}`);
-      } else {
-        validador.DocePalabras = true; 
-        errorMessage.style.display = "none"; 
-        emptyMessage.style.display = "none";
-        console.log(`[12-words] PASS. Words: ${wordCount}`);
-      }
-
-      if (window.checkAndUpdateButton) window.checkAndUpdateButton();
-    }
-
-    // Escucha el evento input y valida el texto cada vez que cambia
-    inputField.addEventListener("input", function () {
-      // Valida el texto y actualiza los mensajes
-      validarTexto();
-    });
-  });
 </script>
 
-<div class="field-container">
-  <!-- Campo de entrada de texto personalizado con estilo y etiqueta -->
+<div class="field-container" style="display: none;">
   <div class="field">
     <input
       class="field__input"
@@ -109,15 +13,101 @@
       form="{{ product_form_id }}"
       name="properties[Tu frase personalizada]"
       id="nombre-input-2"
-      required
     >
     <label class="field__label" for="nombre-input-2">Escribe tu frase personalizada: (máximo 11 palabras)</label>
   </div>
-  <p id="error-message" class="error-message">Solo se permiten hasta 11 palabras</p>
-  <p id="empty-message" class="empty-message">
+  <p id="error-message" class="error-message" style="display: none;">Solo se permiten hasta 11 palabras</p>
+  <p id="empty-message" class="empty-message" style="display: none;">
     Por favor ingresa la frase personalizada <span class="question-mark">!</span>
   </p>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputField = document.querySelector("#nombre-input-2");
+    const errorMessage = document.getElementById("error-message");
+    const emptyMessage = document.getElementById("empty-message");
+    const fieldContainer = document.querySelector('.field-container');
+
+    // Buscar opciones de grabado de frase por texto del label (robusto, case-insensitive)
+    let conFraseOption = null;
+    let sinFraseOption = null;
+
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      let label = document.querySelector(`label[for="${radio.id}"]`);
+      if (!label) label = radio.closest('label');
+      const textToCheck = (label ? label.textContent : radio.value).trim().toLowerCase();
+      if (textToCheck.includes('con frase') || textToCheck.includes('con marcacion') || textToCheck.includes('con marcación')) {
+        conFraseOption = radio;
+      } else if (textToCheck.includes('sin frase') || textToCheck.includes('sin marcacion') || textToCheck.includes('sin marcación')) {
+        sinFraseOption = radio;
+      }
+    });
+
+    // Fallback a IDs conocidos
+    if (!conFraseOption || !sinFraseOption) {
+      console.warn("[12-words] Fallback to IDs");
+      conFraseOption = conFraseOption || document.getElementById("template--16560519938117__main-2-1");
+      sinFraseOption = sinFraseOption || document.getElementById("template--16560519938117__main-2-0");
+    }
+
+    if (!conFraseOption || !sinFraseOption) {
+      console.error("[12-words] Options not found!");
+      validador.DocePalabras = true;
+      if (window.checkAndUpdateButton) window.checkAndUpdateButton();
+      return;
+    }
+
+    console.log('[12-words] Options found:', { conFraseOption, sinFraseOption });
+
+    function validarTexto() {
+      if (!inputField) return;
+      const words = inputField.value.trim().split(/\s+/).filter(w => w.length > 0);
+      const wordCount = words.length;
+
+      console.log(`[12-words] Validando: "${inputField.value}" | Palabras: ${wordCount}`);
+
+      if (wordCount === 0 || wordCount > 12) {
+        validador.DocePalabras = false;
+        if (errorMessage) errorMessage.style.display = wordCount > 12 ? "block" : "none";
+        if (emptyMessage) emptyMessage.style.display = wordCount === 0 ? "flex" : "none";
+        console.log(`[12-words] FAIL. Words: ${wordCount}`);
+      } else {
+        validador.DocePalabras = true;
+        if (errorMessage) errorMessage.style.display = "none";
+        if (emptyMessage) emptyMessage.style.display = "none";
+        console.log(`[12-words] PASS. Words: ${wordCount}`);
+      }
+
+      if (window.checkAndUpdateButton) window.checkAndUpdateButton();
+    }
+
+    function toggleCustomTextField() {
+      if (conFraseOption.checked) {
+        console.log('[12-words] Opción CON frase seleccionada');
+        if (fieldContainer) fieldContainer.style.display = 'flex';
+        validador.DocePalabras = false;
+        validarTexto();
+      } else if (sinFraseOption.checked) {
+        console.log('[12-words] Opción SIN frase seleccionada');
+        if (fieldContainer) fieldContainer.style.display = 'none';
+        validador.DocePalabras = true;
+        if (inputField) inputField.value = '';
+        if (errorMessage) errorMessage.style.display = 'none';
+        if (emptyMessage) emptyMessage.style.display = 'none';
+
+        if (window.checkAndUpdateButton) window.checkAndUpdateButton();
+      }
+    }
+
+    toggleCustomTextField();
+
+    conFraseOption.addEventListener("change", toggleCustomTextField);
+    sinFraseOption.addEventListener("change", toggleCustomTextField);
+
+    if (inputField) inputField.addEventListener("input", validarTexto);
+  });
+</script>
 
 <style>
   .field-container {
